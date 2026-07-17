@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pix Mobile</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f0f0f;
+    color: white;
+}
+
+.container {
+    padding: 15px;
+    max-width: 420px;
+    margin: auto;
+}
+
+h2 {
+    text-align: center;
+}
+
+select, input {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: none;
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    margin-top: 12px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+}
+
+.btn-gerar, .btn-recebido {
+    background: #2d6cdf;
+    color: white;
+}
+
+.btn-voltar {
+    background: #222;
+    color: white;
+}
+
+/* QR */
+#qrArea {
+    display: none;
+    text-align: center;
+}
+
+#qrcode {
+    margin-top: 20px;
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.82);
+    display: none;
+    z-index: 999;
+}
+
+.confirmacao-centro {
+    position: absolute;
+    top: 36%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+}
+
+.check {
+    font-size: 92px;
+    color: #00d47a;
+    line-height: 1;
+}
+
+.msg {
+    margin-top: 8px;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* Avaliação estilo app */
+.avaliacao-card {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #242424;
+    border-radius: 26px 26px 0 0;
+    padding: 28px 24px 26px;
+    text-align: center;
+    box-shadow: 0 -8px 30px rgba(0,0,0,0.45);
+}
+
+.avaliacao-titulo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 22px;
+}
+
+.estrelas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto 28px;
+    max-width: 360px;
+}
+
+.star {
+    font-size: 58px;
+    color: #5a5a5a;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.star.active {
+    color: gold;
+    transform: scale(1.06);
+}
+
+.avaliacao-info {
+    border-top: 1px solid #333;
+    padding-top: 22px;
+    color: #bdbdbd;
+    font-size: 16px;
+    margin-bottom: 18px;
+}
+
+.overlay .btn-voltar {
+    background: #111;
+    color: white;
+    max-width: 420px;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Botao raio (taxa +20%) */
+.linha-valor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.linha-valor input {
+    margin-top: 0;
+    flex: 1;
+}
+
+.btn-raio {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    padding: 0;
+    margin-top: 0;
+    border-radius: 10px;
+    background: #2a2a2a;
+    color: #888;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #3a3a3a;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-raio.ativo {
+    background: #3a2f00;
+    color: gold;
+    border-color: gold;
+}
+
+.info-taxa {
+    text-align: center;
+    font-size: 13px;
+    color: #bdbdbd;
+    margin-top: 8px;
+    display: none;
+}
+
+.info-taxa.visivel {
+    display: block;
+}
+
+.rodape {
+    text-align: center;
+    margin-top: 22px;
+}
+
+.btn-resetar {
+    width: auto;
+    padding: 6px 14px;
+    margin-top: 0;
+    background: none;
+    border: 1px solid #333;
+    color: #777;
+    font-size: 12px;
+    font-weight: normal;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.btn-resetar:active {
+    color: #aaa;
+    border-color: #555;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Cobrar via Pix</h2>
+
+    <!-- FORM -->
+    <div id="formArea">
+
+        <select id="tipo">
+            <option value="cpf">PagSeguro (CPF)</option>
+            <option value="next">NEXT (Email)</option>
+            <option value="picpay">PICPAY (Email)</option>
+        </select>
+
+        <div class="linha-valor">
+            <input type="number" id="valor" placeholder="Valor (opcional)" oninput="atualizarInfoTaxa()">
+            <button type="button" class="btn-raio" id="btnRaio" onclick="toggleTaxa()" title="Aplicar taxa de 20%">⚡</button>
+        </div>
+
+        <div class="info-taxa" id="infoTaxa"></div>
+
+        <button class="btn-gerar" onclick="gerarPix()">Gerar QR Code</button>
+    </div>
+
+    <!-- QR -->
+    <div id="qrArea">
+        <div id="qrcode"></div>
+
+        <button class="btn-recebido" onclick="confirmar()">Pagamento recebido</button>
+        <button class="btn-voltar" onclick="voltar()">Voltar</button>
+    </div>
+
+    <div class="rodape">
+        <button class="btn-resetar" onclick="resetar()">Resetar</button>
+    </div>
+
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+    <div class="confirmacao-centro">
+        <div class="check">✔</div>
+        <div class="msg">Pagamento recebido</div>
+    </div>
+
+    <div class="avaliacao-card">
+        <div class="avaliacao-titulo">Como foi sua corrida?</div>
+
+        <div class="estrelas">
+            <span class="star" onclick="avaliar(1)">★</span>
+            <span class="star" onclick="avaliar(2)">★</span>
+            <span class="star" onclick="avaliar(3)">★</span>
+            <span class="star" onclick="avaliar(4)">★</span>
+            <span class="star" onclick="avaliar(5)">★</span>
+        </div>
+
+        <div class="avaliacao-info">Seu feedback pode ajudar a melhorar suas corridas</div>
+
+        <button class="btn-voltar" onclick="voltarConfirmacao()">Voltar</button>
+    </div>
+</div>
+
+<script>
+function crc16(str) {
+    let crc = 0xFFFF;
+
+    for (let c = 0; c < str.length; c++) {
+        crc ^= str.charCodeAt(c) << 8;
+
+        for (let i = 0; i < 8; i++) {
+            if ((crc & 0x8000) !== 0) {
+                crc = (crc << 1) ^ 0x1021;
+            } else {
+                crc <<= 1;
+            }
+        }
+    }
+
+    return (crc & 0xFFFF)
+        .toString(16)
+        .toUpperCase()
+        .padStart(4, '0');
+}
+
+function campo(id, valor) {
+    return id + valor.length.toString().padStart(2, '0') + valor;
+}
+
+let taxaAtiva = false;
+
+function toggleTaxa() {
+    taxaAtiva = !taxaAtiva;
+    document.getElementById("btnRaio").classList.toggle("ativo", taxaAtiva);
+    atualizarInfoTaxa();
+}
+
+function atualizarInfoTaxa() {
+    let info = document.getElementById("infoTaxa");
+    let valorDigitado = parseFloat(document.getElementById("valor").value);
+
+    if (taxaAtiva && !isNaN(valorDigitado) && valorDigitado > 0) {
+        let final = (valorDigitado * 1.2).toFixed(2);
+        info.textContent = "Taxa de 20% ativada — valor final: R$ " + final;
+        info.classList.add("visivel");
+    } else if (taxaAtiva) {
+        info.textContent = "Taxa de 20% ativada";
+        info.classList.add("visivel");
+    } else {
+        info.classList.remove("visivel");
+    }
+}
+
+function renderizarQR(payload) {
+    document.getElementById("qrcode").innerHTML = "";
+
+    new QRCode(document.getElementById("qrcode"), {
+        text: payload,
+        width: 260,
+        height: 260
+    });
+
+    document.getElementById("formArea").style.display = "none";
+    document.getElementById("qrArea").style.display = "block";
+}
+
+function gerarPix() {
+
+    let tipo = document.getElementById("tipo").value;
+    let valor = document.getElementById("valor").value;
+
+    if (taxaAtiva && valor) {
+        valor = (parseFloat(valor) * 1.2).toFixed(2);
+    }
+
+    let chave = "";
+    let nome = "";
+
+    // CHAVES PIX
+    if (tipo === "cpf") {
+
+        chave = "02571114255";
+        nome = "PAGSEGURO";
+
+    } else if (tipo === "next") {
+
+        chave = "lucasg092@outlook.com";
+        nome = "NEXT";
+
+    } else if (tipo === "picpay") {
+
+        chave = "pix.dpix092@gmail.com";
+        nome = "PICPAY";
+    }
+
+    let payload =
+        campo("00", "01") +
+
+        campo("26",
+            campo("00", "BR.GOV.BCB.PIX") +
+            campo("01", chave)
+        ) +
+
+        campo("52", "0000") +
+        campo("53", "986") +
+
+        (valor
+            ? campo("54", parseFloat(valor).toFixed(2))
+            : "") +
+
+        campo("58", "BR") +
+        campo("59", nome) +
+        campo("60", "MANAUS") +
+        campo("62", campo("05", "***"));
+
+    payload += "6304";
+    payload += crc16(payload);
+
+    salvarEstado(payload);
+    renderizarQR(payload);
+}
+
+function salvarEstado(payload) {
+    let estado = {
+        tipo: document.getElementById("tipo").value,
+        valor: document.getElementById("valor").value,
+        taxaAtiva: taxaAtiva,
+        payload: payload || null
+    };
+    localStorage.setItem("pixEstado", JSON.stringify(estado));
+}
+
+function carregarEstado() {
+    let salvo = localStorage.getItem("pixEstado");
+    if (!salvo) return;
+
+    let estado = JSON.parse(salvo);
+
+    document.getElementById("tipo").value = estado.tipo || "cpf";
+    document.getElementById("valor").value = estado.valor || "";
+
+    taxaAtiva = !!estado.taxaAtiva;
+    document.getElementById("btnRaio").classList.toggle("ativo", taxaAtiva);
+    atualizarInfoTaxa();
+
+    if (estado.payload) {
+        renderizarQR(estado.payload);
+    }
+}
+
+function resetar() {
+    localStorage.removeItem("pixEstado");
+
+    document.getElementById("tipo").value = "cpf";
+    document.getElementById("valor").value = "";
+
+    taxaAtiva = false;
+    document.getElementById("btnRaio").classList.remove("ativo");
+    atualizarInfoTaxa();
+
+    document.getElementById("qrcode").innerHTML = "";
+    document.getElementById("qrArea").style.display = "none";
+    document.getElementById("formArea").style.display = "block";
+}
+
+window.addEventListener("DOMContentLoaded", carregarEstado);
+
+function voltar() {
+
+    document.getElementById("qrArea").style.display = "none";
+    document.getElementById("formArea").style.display = "block";
+    document.getElementById("qrcode").innerHTML = "";
+}
+
+function confirmar() {
+    document.getElementById("overlay").style.display = "flex";
+}
+
+function voltarConfirmacao() {
+
+    document.getElementById("overlay").style.display = "none";
+
+    voltar();
+    resetar();
+    resetStars();
+}
+
+function avaliar(nota) {
+
+    let stars = document.querySelectorAll(".star");
+
+    stars.forEach((star, i) => {
+
+        if (i < nota) {
+            star.classList.add("active");
+        } else {
+            star.classList.remove("active");
+        }
+    });
+}
+
+function resetStars() {
+
+    document.querySelectorAll(".star").forEach(star => {
+        star.classList.remove("active");
+    });
+}
+</script>
+
+</body>
+</html>
