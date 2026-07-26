@@ -2,12 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Controle de Corridas</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;font-family:Arial}
-body{margin:0;padding:15px;transition:.3s}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding:15px;transition:.3s;width:100%;overflow-x:hidden}
 body.dark{background:#121212;color:#fff}
 body.light{background:#f2f2f2;color:#111}
 .container{max-width:430px;margin:auto}
@@ -20,13 +21,15 @@ body.light{background:#f2f2f2;color:#111}
     box-shadow:0 4px 14px rgba(0,0,0,.25)
 }
 
-input{
+input, select{
     width:100%;
     padding:16px;
     border:none;
     border-radius:14px;
     font-size:18px;
-    margin-bottom:12px
+    margin-bottom:12px;
+    font-family:Arial;
+    color:#111
 }
 
 button{
@@ -36,6 +39,11 @@ button{
     border-radius:14px;
     font-size:17px;
     cursor:pointer
+}
+
+button:disabled{
+    opacity:.5;
+    cursor:not-allowed
 }
 
 .primary{background:#1976d2;color:white}
@@ -104,209 +112,201 @@ button{
     padding:8px 10px;
 }
 
-.linkSair{
-    background:none;
-    border:none;
-    color:inherit;
-    opacity:.65;
-    font-size:13px;
-    text-decoration:underline;
-    cursor:pointer;
-    padding:4px;
-    width:auto;
-    display:block;
-    margin:0 auto 12px auto;
+/* ===== Topo / Atualizar ===== */
+.topBar{
+    margin-bottom:15px;
 }
 
-/* ===== CPMA ===== */
-.cpmaLogo{
-    text-align:center;
-    font-size:36px;
-    font-weight:900;
-    letter-spacing:2px;
-    color:#ff5722;
-    margin:6px 0 18px 0;
-    font-style:italic;
-}
-
-.cpmaVoltar{
-    background:rgba(255,255,255,.1);
-    color:inherit;
-    margin-bottom:14px;
-}
-
-.cpmaTabs{
-    display:flex;
-    background:rgba(255,255,255,.12);
-    border-radius:40px;
-    padding:5px;
-    margin-bottom:16px;
-    overflow-x:auto;
-}
-
-.cpmaTabs button{
-    flex:1;
-    white-space:nowrap;
-    padding:12px 8px;
-    border:none;
-    border-radius:40px;
-    font-size:14px;
-    font-weight:bold;
-    background:transparent;
-    color:inherit;
-    opacity:.7;
-    cursor:pointer;
-}
-
-.cpmaTabs button.ativa{
-    background:#ff5722;
-    color:#000;
-    opacity:1;
-}
-
-.cpmaFaturamento{
-    background:#00e676;
-    color:#000;
-    border-radius:16px;
-    padding:16px;
-    text-align:center;
-    margin-bottom:12px;
-}
-
-.cpmaFaturamento div:first-child{font-size:16px;font-weight:bold}
-.cpmaFaturamento div:last-child{font-size:32px;font-weight:900;margin-top:4px}
-
-.cpmaLinha2{
-    display:flex;
-    gap:10px;
-    margin-bottom:16px;
-}
-
-.cpmaDespesas,.cpmaSaldo{
-    flex:1;
-    border-radius:16px;
-    padding:14px;
-    text-align:center;
+#btnAtualizar{
+    background:#333;
     color:#fff;
-}
-
-.cpmaDespesas{background:#e53935}
-.cpmaSaldo{background:#8e24aa}
-
-.cpmaDespesas div:first-child,.cpmaSaldo div:first-child{font-size:14px}
-.cpmaDespesas div:last-child,.cpmaSaldo div:last-child{font-size:22px;font-weight:900;margin-top:4px}
-
-.cpmaAddDespesa{
-    width:auto;
-    background:rgba(255,255,255,.25);
-    color:#fff;
-    font-size:11px;
-    padding:4px 8px;
-    border-radius:8px;
-    margin-top:8px;
-    cursor:pointer;
-    border:none;
-}
-
-.cpmaGrid{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:8px;
-    margin-bottom:16px;
-}
-
-.cpmaCard{
-    background:rgba(255,255,255,.08);
-    border-radius:14px;
-    padding:12px 6px;
-    text-align:center;
-}
-
-.cpmaCard .label{
-    font-size:11px;
-    opacity:.6;
-    margin-bottom:8px;
-    min-height:26px;
+    font-size:15px;
     display:flex;
     align-items:center;
     justify-content:center;
+    gap:8px;
 }
 
-.cpmaCard .valor{
-    font-size:16px;
-    font-weight:bold;
-}
-
-.cpmaLista{
-    margin-bottom:16px;
-}
-
-.cpmaDespesaItem{
+/* ===== Abas ===== */
+.tabs{
     display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:10px 12px;
-    border-radius:12px;
+    gap:8px;
+    margin-bottom:15px;
+}
+
+.tabBtn{
+    flex:1;
+    padding:13px;
+    border:none;
+    border-radius:14px;
     background:rgba(255,255,255,.08);
-    margin-bottom:6px;
-    font-size:13px;
+    color:inherit;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    opacity:.6;
 }
 
-.cpmaAviso{
-    font-size:11px;
-    opacity:.55;
-    text-align:center;
-    margin:-8px 0 16px 0;
-    line-height:1.5;
-}
-
-/* ===== PIX ===== */
-#telaPix{
+.tabBtn.active{
+    opacity:1;
+    background:#1976d2;
     color:#fff;
 }
 
-#telaPix .pixCard{
-    background:#181818;
-    border-radius:18px;
-    padding:16px;
+.tabContent{
+    display:none;
 }
 
-#telaPix select,#telaPix input{
-    width:100%;
-    padding:14px;
-    margin-top:10px;
-    border-radius:10px;
-    border:none;
-    font-size:16px;
+.tabContent.active{
+    display:block;
 }
 
-#telaPix button{
-    width:100%;
-    padding:16px;
-    margin-top:12px;
-    border-radius:12px;
-    border:none;
+/* ===== Pix: cabeÃ§alho e chaves ===== */
+.pixTitulo{
+    text-align:center;
+    font-size:20px;
     font-weight:bold;
-    font-size:16px;
-    cursor:pointer;
+    margin:0 0 15px 0;
 }
 
-#telaPix .btn-gerar,#telaPix .btn-recebido{
+.btn-gerar, .btn-recebido{
     background:#2d6cdf;
     color:white;
 }
 
-#telaPix .btn-voltar-pix{
+.btn-voltar{
     background:#222;
     color:white;
 }
 
-#telaPix #qrArea{
+.chaveItem{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px;
+    border-radius:14px;
+    margin-bottom:10px;
+    background:rgba(255,255,255,.08);
+}
+
+.chaveInfo{
+    overflow:hidden;
+    padding-right:8px;
+}
+
+.chaveNome{
+    font-weight:bold;
+    font-size:15px;
+}
+
+.chaveValor{
+    font-size:13px;
+    opacity:.75;
+    word-break:break-all;
+    font-family:monospace;
+    margin-top:2px;
+}
+
+.chaveActions{
+    display:flex;
+    gap:6px;
+    flex-shrink:0;
+}
+
+.chaveActions button{
+    width:auto;
+    padding:8px 10px;
+}
+
+.semChaves{
+    text-align:center;
+    opacity:.7;
+    padding:10px 0;
+    font-size:14px;
+}
+
+.formChave{
+    display:none;
+    margin-top:5px;
+}
+
+.formChave.visivel{
+    display:block;
+}
+
+.btn-chaves{
+    background:#333;
+    color:#fff;
+    margin-bottom:15px;
+}
+
+.chavesModalCard{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:90%;
+    max-width:400px;
+    max-height:82vh;
+    overflow-y:auto;
+    background:#242424;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 -8px 30px rgba(0,0,0,.45);
+    color:#fff;
+}
+
+.chavesModalHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.btn-fechar-chaves{
+    width:auto;
+    padding:6px 12px;
+    background:#333;
+    color:#fff;
+}
+
+.btn-voltar-pix{
+    background:#222;
+    color:#fff;
+    margin-bottom:10px;
+}
+
+.btn-add-chave{
+    background:#00c853;
+    color:#fff;
+}
+
+.formChaveBotoes{
+    display:flex;
+    gap:8px;
+}
+
+.formChaveBotoes button{
+    flex:1;
+}
+
+.btn-salvar-chave{
+    background:#00c853;
+    color:#fff;
+}
+
+.btn-cancelar-chave{
+    background:#444;
+    color:#fff;
+}
+
+/* QR */
+#qrArea{
     display:none;
     text-align:center;
 }
 
-#telaPix #qrcode{
+#qrcode{
     margin-top:20px;
     background:white;
     padding:12px;
@@ -314,52 +314,61 @@ button{
     display:inline-block;
 }
 
-.pixOverlay{
+/* Overlay */
+.overlay{
     position:fixed;
-    top:0;left:0;right:0;bottom:0;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
     background:rgba(0,0,0,0.82);
     display:none;
     z-index:999;
 }
 
-.pixConfirmacaoCentro{
+.confirmacao-centro{
     position:absolute;
     top:36%;
     left:50%;
-    transform:translate(-50%,-50%);
+    transform:translate(-50%, -50%);
     text-align:center;
     width:100%;
 }
 
-.pixCheck{
+.check{
     font-size:92px;
     color:#00d47a;
     line-height:1;
 }
 
-.pixMsg{
+.msg{
     margin-top:8px;
     font-size:25px;
     font-weight:bold;
+    color:#fff;
 }
 
-.pixAvaliacaoCard{
+/* AvaliaÃ§Ã£o estilo app */
+.avaliacao-card{
     position:absolute;
-    left:0;right:0;bottom:0;
+    left:0;
+    right:0;
+    bottom:0;
     background:#242424;
     border-radius:26px 26px 0 0;
     padding:28px 24px 26px;
     text-align:center;
     box-shadow:0 -8px 30px rgba(0,0,0,0.45);
+    color:#fff;
 }
 
-.pixAvaliacaoTitulo{
+.avaliacao-titulo{
     font-size:24px;
     font-weight:bold;
     margin-bottom:22px;
 }
 
-.pixEstrelas{
+.estrelas{
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -367,20 +376,20 @@ button{
     max-width:360px;
 }
 
-.pixStar{
+.star{
     font-size:58px;
     color:#5a5a5a;
     cursor:pointer;
     line-height:1;
-    transition:color .15s,transform .15s;
+    transition:color 0.15s, transform 0.15s;
 }
 
-.pixStar.active{
+.star.active{
     color:gold;
     transform:scale(1.06);
 }
 
-.pixAvaliacaoInfo{
+.avaliacao-info{
     border-top:1px solid #333;
     padding-top:22px;
     color:#bdbdbd;
@@ -388,7 +397,7 @@ button{
     margin-bottom:18px;
 }
 
-.pixOverlay .btn-voltar-pix{
+.overlay .btn-voltar{
     background:#111;
     color:white;
     max-width:420px;
@@ -396,25 +405,25 @@ button{
     display:block;
 }
 
-#telaPix .linha-valor{
+/* Botao raio (taxa +20%) */
+.linha-valor{
     display:flex;
     align-items:center;
     gap:8px;
-    margin-top:10px;
+    margin-bottom:12px;
 }
 
-#telaPix .linha-valor input{
-    margin-top:0;
+.linha-valor input{
+    margin-bottom:0;
     flex:1;
 }
 
-#telaPix .btn-raio{
-    width:46px;
-    height:46px;
-    min-width:46px;
+.btn-raio{
+    width:52px;
+    height:52px;
+    min-width:52px;
     padding:0;
-    margin-top:0;
-    border-radius:10px;
+    border-radius:14px;
     background:#2a2a2a;
     color:#888;
     font-size:20px;
@@ -423,287 +432,251 @@ button{
     justify-content:center;
     border:1px solid #3a3a3a;
     cursor:pointer;
-    transition:all .15s;
+    transition:all 0.15s;
 }
 
-#telaPix .btn-raio.ativo{
+.btn-raio.ativo{
     background:#3a2f00;
     color:gold;
     border-color:gold;
 }
 
-#telaPix .info-taxa{
+.info-taxa{
     text-align:center;
     font-size:13px;
-    color:#bdbdbd;
-    margin-top:8px;
+    opacity:.8;
+    margin:-6px 0 12px 0;
     display:none;
 }
 
-#telaPix .info-taxa.visivel{
+.info-taxa.visivel{
     display:block;
 }
 
-#telaPix .btn-config{
-    background:#1a1a1a;
-    color:#aaa;
-    font-size:13px;
-    font-weight:normal;
-    padding:11px;
-    border:1px solid #333;
-}
-
-#telaPix .chave-bloco{
-    margin-top:18px;
-    padding-top:14px;
-    border-top:1px solid #222;
-}
-
-#telaPix .chave-bloco:first-of-type{
-    margin-top:6px;
-    padding-top:0;
-    border-top:none;
-}
-
-#telaPix .chave-bloco input{
-    margin-top:8px;
-}
-
-#telaPix .chave-bloco input:first-child{
-    margin-top:0;
-}
-
-#telaPix .config-sub{
-    color:#999;
-    font-size:14px;
-    text-align:center;
-    margin-top:-8px;
-}
-
-#telaPix .pix-rodape{
+.rodape{
     text-align:center;
     margin-top:22px;
 }
 
-#telaPix .btn-resetar-pix{
+.btn-resetar{
     width:auto;
     padding:6px 14px;
     margin-top:0;
     background:none;
-    border:1px solid #333;
-    color:#777;
+    border:1px solid #666;
+    color:inherit;
+    opacity:.6;
     font-size:12px;
     font-weight:normal;
     border-radius:20px;
     cursor:pointer;
 }
+
+.btn-resetar:active{
+    opacity:.9;
+}
+
+/* ===== Responsivo para telas pequenas ===== */
+@media (max-width:360px){
+    body{padding:10px}
+    .card, .hourBlock{padding:14px}
+    .hourTotal{font-size:28px}
+    input, select, button{font-size:15px}
+    .tabBtn{font-size:13px;padding:11px}
+    .star{font-size:46px}
+}
+
+body.compact .card, body.compact .hourBlock{
+    padding:13px;
+}
+
+body.compact .hourTotal{
+    font-size:27px;
+}
 </style>
 </head>
 <body>
+<div class="container">
 
-<div class="container" id="telaLogin" style="display:none">
-    <div class="card" style="text-align:center">
-        <h2 style="margin-top:0">🚗 Controle de Corridas</h2>
-        <p style="opacity:.8;font-size:14px;margin-bottom:18px">Digite seu nome e a senha de acesso para começar. Você ganha 30 minutos de teste grátis.</p>
-        <input id="loginNome" type="text" placeholder="Seu nome" autocomplete="off">
-        <input id="loginSenha" type="text" placeholder="Senha de acesso (ex: AB12CD34)" style="text-transform:uppercase" autocomplete="off">
-        <button class="primary" onclick="tentarLogin()">Entrar</button>
-        <p style="font-size:12px;opacity:.6;margin-top:14px;margin-bottom:0">Não tem uma senha? Fale com quem te repassou o app.</p>
-    </div>
-</div>
-
-<div class="container" id="telaExpirado" style="display:none">
-    <div class="card" style="text-align:center;border:2px solid #d32f2f">
-        <div style="font-size:52px;line-height:1">🔒</div>
-        <h2 style="margin-top:8px;color:#ff5252">Acesso bloqueado</h2>
-        <p style="opacity:.9;font-size:15px;margin-bottom:18px;font-weight:bold" id="msgExpirado">Você precisa efetuar o pagamento para continuar usando o aplicativo.</p>
-        <a href="https://wa.me/5592985895835" target="_blank" style="text-decoration:none">
-            <button type="button" style="background:#25D366;color:#fff;margin-bottom:12px">📱 Falar no WhatsApp (92) 98589-5835</button>
-        </a>
-        <p style="font-size:12px;opacity:.65;margin:-4px 0 16px 0">Entre em contato para efetuar o pagamento e receber sua senha mensal.</p>
-        <input id="renovarSenha" type="text" placeholder="Senha mensal (ex: AB12CD34)" style="text-transform:uppercase" autocomplete="off">
-        <button class="primary" onclick="tentarRenovar()">Ativar plano mensal</button>
-        <button class="linkSair" onclick="sairApp()">Voltar para a tela de entrada</button>
-    </div>
-</div>
-
-<div class="container" id="telaVeiculo" style="display:none">
-    <div class="card" style="text-align:center">
-        <h2 style="margin-top:0">🚗 Dados do veículo</h2>
-        <p style="opacity:.8;font-size:14px;margin-bottom:18px">Essas informações aparecem no painel CPMA.</p>
-        <input id="veiculoMarca" type="text" placeholder="Marca (ex: Chevrolet)" autocomplete="off">
-        <input id="veiculoModelo" type="text" placeholder="Modelo (ex: Onix)" autocomplete="off">
-        <input id="veiculoAno" type="text" placeholder="Ano (ex: 2022)" autocomplete="off">
-        <input id="veiculoPlaca" type="text" placeholder="Placa" style="text-transform:uppercase" autocomplete="off">
-        <input id="veiculoCor" type="text" placeholder="Cor (opcional)" autocomplete="off">
-        <button class="primary" onclick="salvarVeiculo()">Salvar e continuar</button>
-    </div>
-</div>
-
-<div class="container" id="appContainer" style="display:none">
-
-    <button class="toggle" onclick="toggleTheme()">🌙 / ☀️ Alternar Tema</button>
-    <div id="infoSessao" style="text-align:center;font-size:12px;opacity:.7;margin:-6px 0 12px 0"></div>
-    <button class="linkSair" onclick="sairApp()">🚪 Sair</button>
-    <button onclick="abrirCPMA()" style="background:#00c853;color:#fff;font-weight:bold;letter-spacing:1px;margin-bottom:15px">📊 CPMA</button>
-    <button onclick="abrirPix()" style="background:#2d6cdf;color:#fff;font-weight:bold;letter-spacing:1px;margin-bottom:15px">💸 Receber Pix</button>
-<div class="card" style="text-align:center;position:relative">
-<button onclick="resetarPonto()" title="Resetar horário" style="position:absolute;top:10px;right:10px;width:auto;padding:6px 9px;font-size:14px;background:rgba(255,255,255,.15);color:inherit;border-radius:10px">↺</button>
-<div><b>💰 Total Geral</b></div><div id="totalGeral" style="font-size:28px">R$ 0,00</div>
-<div id="pontoStatus" style="margin-top:10px;font-size:14px;opacity:.85;line-height:1.6"></div>
-<div id="pontoBotoes" style="margin-top:10px"></div>
-</div>
-
-    <button class="metaBtn" onclick="toggleMetaMenu()">
-        🎯 Meta por hora (R$ <span id="metaAtual">30</span>)
-    </button>
-
-    <div class="metaOptions" id="metaOptions">
-        <button onclick="alterarMeta(30)">30/h</button>
-        <button onclick="alterarMeta(40)">40/h</button>
-        <button onclick="alterarMeta(45)">45/h</button>
+    <div class="topBar" id="topBar">
+        <button id="btnAtualizar" onclick="atualizarApp()" title="Limpa o cache do app e recarrega">ðŸ”„ Atualizar</button>
     </div>
 
-    <div class="card">
-        <input id="valorCorrida" type="number" step="0.01" placeholder="Valor da corrida">
-        <div style="display:flex;gap:8px">
-<button class="primary" style="flex:1" onclick="adicionarCorrida()">Adicionar Corrida</button>
-<button id="reportBtn" onclick="baixarRelatorio()" style="width:60px;background:#1565c0;color:#fff" title="Baixar relatório do dia">📄</button>
-</div>
+    <div class="tabs" id="tabsBar">
+        <button class="tabBtn active" id="tabBtnGanhos" onclick="mudarAba('ganhos')">ðŸš— Ganhos</button>
+        <button class="tabBtn" id="tabBtnPix" onclick="mudarAba('pix')">ðŸ’  Pix</button>
     </div>
 
-    <div id="listaHoras"></div>
-</div>
+    <!-- ===================== ABA GANHOS ===================== -->
+    <div id="tabGanhos" class="tabContent active">
 
-<div class="container" id="telaCPMA" style="display:none">
-    <button class="toggle cpmaVoltar" onclick="fecharCPMA()">← Voltar</button>
-    <div class="cpmaLogo">CPMA</div>
-    <div id="cpmaInfoVeiculo" style="text-align:center;font-size:13px;opacity:.75;margin:-10px 0 16px 0"></div>
-
-    <div class="cpmaTabs" id="cpmaTabs">
-        <button class="ativa" data-periodo="dia" onclick="mudarPeriodoCPMA('dia')">Diário</button>
-        <button data-periodo="semana" onclick="mudarPeriodoCPMA('semana')">Semanal</button>
-        <button data-periodo="mes" onclick="mudarPeriodoCPMA('mes')">Mensal</button>
-        <button data-periodo="ano" onclick="mudarPeriodoCPMA('ano')">Anual</button>
-    </div>
-
-    <div class="cpmaFaturamento">
-        <div id="cpmaTituloFaturamento">Faturamento</div>
-        <div id="cpmaFaturamento">R$ 0,00</div>
-    </div>
-
-    <div class="cpmaLinha2">
-        <div class="cpmaDespesas">
-            <div>Despesas</div>
-            <div id="cpmaDespesas">R$ 0,00</div>
-            <button class="cpmaAddDespesa" onclick="registrarDespesa()">+ Lançar despesa</button>
+        <button class="toggle" onclick="toggleTheme()">ðŸŒ™ / â˜€ï¸ Alternar Tema</button>
+        <div class="card" style="text-align:center;position:relative">
+            <button onclick="resetarPonto()" title="Resetar horÃ¡rio" style="position:absolute;top:10px;right:10px;width:auto;padding:6px 9px;font-size:14px;background:rgba(255,255,255,.15);color:inherit;border-radius:10px">â†º</button>
+            <div><b>ðŸ’° Total Geral</b></div><div id="totalGeral" style="font-size:28px">R$ 0,00</div>
+            <div id="pontoStatus" style="margin-top:10px;font-size:14px;opacity:.85;line-height:1.6"></div>
+            <div id="pontoBotoes" style="margin-top:10px"></div>
         </div>
-        <div class="cpmaSaldo">
-            <div>Saldo</div>
-            <div id="cpmaSaldo">R$ 0,00</div>
+
+        <button class="metaBtn" onclick="toggleMetaMenu()">
+            ðŸŽ¯ Meta por hora (R$ <span id="metaAtual">30</span>)
+        </button>
+
+        <div class="metaOptions" id="metaOptions">
+            <button onclick="alterarMeta(30)">30/h</button>
+            <button onclick="alterarMeta(40)">40/h</button>
+            <button onclick="alterarMeta(45)">45/h</button>
+        </div>
+
+        <div class="card">
+            <input id="valorCorrida" type="number" step="0.01" placeholder="Valor da corrida">
+            <div style="display:flex;gap:8px">
+                <button class="primary" style="flex:1" onclick="adicionarCorrida()">Adicionar Corrida</button>
+                <button id="reportBtn" onclick="baixarRelatorio()" style="width:60px;background:#1565c0;color:#fff" title="Baixar relatÃ³rio do dia">ðŸ“„</button>
+            </div>
+        </div>
+
+        <div id="listaHoras"></div>
+    </div>
+
+    <!-- ===================== ABA PIX ===================== -->
+    <div id="tabPix" class="tabContent">
+
+        <div class="pixTitulo">ðŸ’  Cobrar via Pix</div>
+
+        <button class="btn-chaves" onclick="abrirChavesModal()">ðŸ”‘ Chaves</button>
+
+        <!-- FORM de geraÃ§Ã£o -->
+        <div id="formArea" class="card">
+
+            <select id="chaveSelect"></select>
+
+            <div class="linha-valor">
+                <input type="number" id="valor" placeholder="Valor (opcional)" oninput="atualizarInfoTaxa()">
+                <button type="button" class="btn-raio" id="btnRaio" onclick="toggleTaxa()" title="Aplicar taxa de 20%">âš¡</button>
+            </div>
+
+            <div class="info-taxa" id="infoTaxa"></div>
+
+            <button class="btn-gerar" id="btnGerar" onclick="gerarPix()">Gerar QR Code</button>
+        </div>
+
+        <!-- QR -->
+        <div id="qrArea">
+            <div id="qrcode"></div>
+
+            <button class="btn-recebido" onclick="confirmar()">Pagamento recebido</button>
+            <button class="btn-voltar" onclick="voltar()">Voltar</button>
+        </div>
+
+        <div class="rodape">
+            <button class="btn-voltar-pix" onclick="mudarAba('ganhos')">â¬… Voltar</button>
+            <button class="btn-resetar" onclick="resetar()">Resetar</button>
         </div>
     </div>
 
-    <div class="cpmaGrid">
-        <div class="cpmaCard"><div class="label">Total de Viagens</div><div class="valor" id="cpmaViagens">0</div></div>
-        <div class="cpmaCard"><div class="label">Horas trabalhadas</div><div class="valor" id="cpmaHoras">0:00</div></div>
-        <div class="cpmaCard"><div class="label">KMs Rodados</div><div class="valor" id="cpmaKm">0.00</div></div>
-
-        <div class="cpmaCard"><div class="label">Fat. por viagem</div><div class="valor" id="cpmaFatViagem">R$ 0,00</div></div>
-        <div class="cpmaCard"><div class="label">Fat. médio por hora</div><div class="valor" id="cpmaFatHora">R$ 0,00</div></div>
-        <div class="cpmaCard"><div class="label">Fat. médio por KM</div><div class="valor" id="cpmaFatKm">R$ 0,00</div></div>
-
-        <div class="cpmaCard"><div class="label">Custo por viagem</div><div class="valor" id="cpmaCustoViagem">R$ 0,00</div></div>
-        <div class="cpmaCard"><div class="label">Custo por hora</div><div class="valor" id="cpmaCustoHora">R$ 0,00</div></div>
-        <div class="cpmaCard"><div class="label">Custo por KM</div><div class="valor" id="cpmaCustoKm">R$ 0,00</div></div>
-
-        <div class="cpmaCard"><div class="label">Lucro por viagem</div><div class="valor" id="cpmaLucroViagem">R$ 0,00</div></div>
-        <div class="cpmaCard"><div class="label">Lucro por hora</div><div class="valor" id="cpmaLucroHora">R$ 0,00</div></div>
-        <div class="cpmaCard"><div class="label">Lucro por KM</div><div class="valor" id="cpmaLucroKm">R$ 0,00</div></div>
-    </div>
-
-    <div class="cpmaAviso">💰 Faturamento e viagens são calculados automaticamente com base nas corridas lançadas. ⏱ Horas e KM consideram os expedientes finalizados a partir de agora. 🧾 Despesas devem ser lançadas manualmente no botão acima.</div>
-
-    <div id="cpmaListaDespesas" class="cpmaLista"></div>
 </div>
 
-<div class="container" id="telaPix" style="display:none">
-    <button class="toggle cpmaVoltar" onclick="fecharPix()">← Voltar</button>
-    <h2 style="text-align:center;margin-top:0">Cobrar via Pix</h2>
-
-    <div class="pixCard" id="formArea">
-        <button type="button" class="btn-config" onclick="abrirConfigPix(false)">⚙ Gerenciar chaves Pix</button>
-
-        <select id="tipo"></select>
-
-        <div class="linha-valor">
-            <input type="number" id="valor" placeholder="Valor (opcional)" oninput="atualizarInfoTaxa()">
-            <button type="button" class="btn-raio" id="btnRaio" onclick="toggleTaxa()" title="Aplicar taxa de 20%">⚡</button>
+<!-- MODAL: Gerenciar Chaves Pix -->
+<div class="overlay" id="chavesOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">ðŸ”‘ Minhas Chaves Pix</div>
+            <button class="btn-fechar-chaves" onclick="fecharChavesModal()">âœ•</button>
         </div>
 
-        <div class="info-taxa" id="infoTaxa"></div>
+        <div id="listaChaves"></div>
 
-        <button class="btn-gerar" onclick="gerarPix()">Gerar QR Code</button>
-    </div>
+        <button class="btn-add-chave" onclick="abrirFormChave(null)">+ Adicionar chave</button>
 
-    <div class="pixCard" id="qrArea">
-        <div id="qrcode"></div>
-        <button class="btn-recebido" onclick="confirmarPix()">Pagamento recebido</button>
-        <button class="btn-voltar-pix" onclick="voltarPix()">Voltar</button>
-    </div>
-
-    <div class="pixCard" id="configArea" style="display:none;">
-        <h2 style="margin-top:0">Suas chaves Pix</h2>
-        <p class="config-sub">Cadastre até 3 chaves. Pelo menos uma é obrigatória.</p>
-
-        <div class="chave-bloco">
-            <input type="text" id="nome1" placeholder="Apelido (ex: PagSeguro)">
-            <input type="text" id="chave1" placeholder="Chave Pix (CPF, e-mail, telefone ou aleatória)">
+        <div class="formChave" id="formChave">
+            <input type="text" id="inputNomeChave" placeholder="Nome da chave (ex: PagSeguro)">
+            <input type="text" id="inputValorChave" placeholder="Chave Pix (CPF, e-mail, telefone ou aleatÃ³ria)">
+            <div class="formChaveBotoes">
+                <button class="btn-salvar-chave" onclick="salvarFormChave()">Salvar</button>
+                <button class="btn-cancelar-chave" onclick="cancelarFormChave()">Cancelar</button>
+            </div>
         </div>
-
-        <div class="chave-bloco">
-            <input type="text" id="nome2" placeholder="Apelido (opcional)">
-            <input type="text" id="chave2" placeholder="Chave Pix (opcional)">
-        </div>
-
-        <div class="chave-bloco">
-            <input type="text" id="nome3" placeholder="Apelido (opcional)">
-            <input type="text" id="chave3" placeholder="Chave Pix (opcional)">
-        </div>
-
-        <button class="btn-gerar" onclick="salvarChaves()">Salvar chaves</button>
-        <button class="btn-voltar-pix" id="btnVoltarConfig" onclick="fecharConfigPix()">Voltar</button>
-    </div>
-
-    <div class="pix-rodape">
-        <button class="btn-resetar-pix" onclick="resetarPix()">Resetar</button>
     </div>
 </div>
 
-<div class="pixOverlay" id="pixOverlayEl">
-    <div class="pixConfirmacaoCentro">
-        <div class="pixCheck">✔</div>
-        <div class="pixMsg">Pagamento recebido</div>
+<!-- OVERLAY (confirmaÃ§Ã£o de pagamento Pix) -->
+<div class="overlay" id="overlay">
+    <div class="confirmacao-centro">
+        <div class="check">âœ”</div>
+        <div class="msg">Pagamento recebido</div>
     </div>
 
-    <div class="pixAvaliacaoCard">
-        <div class="pixAvaliacaoTitulo">Como foi sua corrida?</div>
+    <div class="avaliacao-card">
+        <div class="avaliacao-titulo">Como foi sua corrida?</div>
 
-        <div class="pixEstrelas">
-            <span class="pixStar" onclick="avaliarPix(1)">★</span>
-            <span class="pixStar" onclick="avaliarPix(2)">★</span>
-            <span class="pixStar" onclick="avaliarPix(3)">★</span>
-            <span class="pixStar" onclick="avaliarPix(4)">★</span>
-            <span class="pixStar" onclick="avaliarPix(5)">★</span>
+        <div class="estrelas">
+            <span class="star" onclick="avaliar(1)">â˜…</span>
+            <span class="star" onclick="avaliar(2)">â˜…</span>
+            <span class="star" onclick="avaliar(3)">â˜…</span>
+            <span class="star" onclick="avaliar(4)">â˜…</span>
+            <span class="star" onclick="avaliar(5)">â˜…</span>
         </div>
 
-        <div class="pixAvaliacaoInfo">Seu feedback pode ajudar a melhorar suas corridas</div>
+        <div class="avaliacao-info">Seu feedback pode ajudar a melhorar suas corridas</div>
 
-        <button class="btn-voltar-pix" onclick="voltarConfirmacaoPix()">Voltar</button>
+        <button class="btn-voltar" onclick="voltarConfirmacao()">Voltar</button>
     </div>
 </div>
 
 <script>
+/* ======================================================================
+   ABAS
+   ====================================================================== */
+function mudarAba(aba){
+    document.getElementById("tabGanhos").classList.toggle("active", aba==="ganhos");
+    document.getElementById("tabPix").classList.toggle("active", aba==="pix");
+    document.getElementById("tabBtnGanhos").classList.toggle("active", aba==="ganhos");
+    document.getElementById("tabBtnPix").classList.toggle("active", aba==="pix");
+
+    document.getElementById("topBar").style.display = aba==="pix" ? "none" : "block";
+    document.getElementById("tabsBar").style.display = aba==="pix" ? "none" : "flex";
+
+    localStorage.setItem("abaAtiva", aba);
+}
+
+/* ======================================================================
+   ATUALIZAR APP (limpa cache do navegador, preserva dados salvos)
+   ====================================================================== */
+async function atualizarApp(){
+    let btn = document.getElementById("btnAtualizar");
+    btn.innerHTML = "â³ Atualizando...";
+    btn.disabled = true;
+
+    try{
+        if("caches" in window){
+            let nomes = await caches.keys();
+            await Promise.all(nomes.map(n=>caches.delete(n)));
+        }
+        if("serviceWorker" in navigator){
+            let regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r=>r.unregister()));
+        }
+    }catch(e){
+        console.warn("Erro ao limpar cache:", e);
+    }
+
+    let url = new URL(window.location.href);
+    url.searchParams.set("_r", Date.now());
+    window.location.href = url.toString();
+}
+
+/* ======================================================================
+   RESPONSIVIDADE - reconhece a tela do usuÃ¡rio
+   ====================================================================== */
+function ajustarTela(){
+    document.body.classList.toggle("compact", window.innerWidth < 360);
+}
+window.addEventListener("resize", ajustarTela);
+
+/* ======================================================================
+   GANHOS POR HORA / CONTROLE DE CORRIDAS
+   ====================================================================== */
 let META = parseFloat(localStorage.getItem("metaHora")) || 30;
 let corridas = JSON.parse(localStorage.getItem("corridas")) || [];
 
@@ -741,7 +714,7 @@ function renderizar(){
 
         let statusHTML = "";
         if(total>=META){
-            statusHTML=`<div class="status" style="color:#00c853">✅ Meta batida!</div>`;
+            statusHTML=`<div class="status" style="color:#00c853">âœ… Meta batida!</div>`;
         } else {
             statusHTML=`<div class="status" style="color:#ff9800">Faltam R$ ${(META-total).toFixed(2)}</div>`;
         }
@@ -762,10 +735,10 @@ function renderizar(){
             });
 
             div.innerHTML = `
-                <div>${horaMin} → R$ ${corrida.valor.toFixed(2)}</div>
+                <div>${horaMin} â†’ R$ ${corrida.valor.toFixed(2)}</div>
                 <div class="actions">
-                    <button onclick="editarCorrida(${corrida.index})">✏️</button>
-                    <button onclick="excluirCorrida(${corrida.index})">🗑️</button>
+                    <button onclick="editarCorrida(${corrida.index})">âœï¸</button>
+                    <button onclick="excluirCorrida(${corrida.index})">ðŸ—‘ï¸</button>
                 </div>
             `;
 
@@ -803,7 +776,7 @@ function adicionarCorrida(){
     let valor = parseFloat(input.value);
 
     if(isNaN(valor)||valor<=0){
-        alert("Digite valor válido");
+        alert("Digite valor vÃ¡lido");
         return;
     }
 
@@ -840,6 +813,9 @@ function toggleTheme(){
     let body=document.body;
     let tema=body.classList.contains("dark")?"light":"dark";
     body.className=tema;
+    if(document.body.classList.contains("compact")===false && window.innerWidth<360){
+        body.classList.add("compact");
+    }
     localStorage.setItem("tema",tema);
 }
 
@@ -896,904 +872,377 @@ function calcularTotalTrabalhado(){
     return totalMs;
 }
 
+function renderizarPontoUI(){
+    let status = document.getElementById("pontoStatus");
+    let botoes = document.getElementById("pontoBotoes");
+
+    if(ponto.estado==="parado"){
+        status.innerHTML = ponto.fim
+            ? `Ãšltimo turno: ${formatarHora(ponto.inicio)} â†’ ${formatarHora(ponto.fim)} (${formatarDuracao(calcularTotalTrabalhado())} trabalhados)`
+            : "Turno nÃ£o iniciado";
+        botoes.innerHTML = `<button class="primary" onclick="iniciarTrabalho()">â–¶ Iniciar turno</button>`;
+    } else if(ponto.estado==="trabalhando"){
+        status.innerHTML = `ðŸŸ¢ Trabalhando desde ${formatarHora(ponto.inicio)} Â· ${formatarDuracao(calcularTotalTrabalhado())}`;
+        botoes.innerHTML = `
+            <div style="display:flex;gap:8px">
+                <button class="toggle" style="flex:1;margin-bottom:0" onclick="pausarTrabalho()">â¸ Pausar</button>
+                <button class="metaBtn" style="flex:1;margin-bottom:0" onclick="encerrarTrabalho()">â¹ Encerrar</button>
+            </div>`;
+    } else if(ponto.estado==="pausado"){
+        status.innerHTML = `ðŸŸ  Pausado Â· trabalhado atÃ© agora: ${formatarDuracao(calcularTotalTrabalhado())}`;
+        botoes.innerHTML = `
+            <div style="display:flex;gap:8px">
+                <button class="primary" style="flex:1;margin-bottom:0" onclick="retomarTrabalho()">â–¶ Retomar</button>
+                <button class="metaBtn" style="flex:1;margin-bottom:0" onclick="encerrarTrabalho()">â¹ Encerrar</button>
+            </div>`;
+    }
+}
+
 function iniciarTrabalho(){
     let km = prompt("KM inicial (opcional, deixe em branco para pular):","");
     let kmInicial = null;
     if(km!==null && km.trim()!==""){
         let n = parseFloat(km);
-        if(!isNaN(n) && n>=0) kmInicial = n;
+        if(!isNaN(n)) kmInicial = n;
     }
-    ponto = {estado:"trabalhando", inicio:new Date().toISOString(), intervalos:[], fim:null, kmInicial, kmFinal:null};
+
+    ponto = {
+        estado:"trabalhando",
+        inicio:new Date().toISOString(),
+        intervalos:[],
+        fim:null,
+        kmInicial,
+        kmFinal:null
+    };
     salvarPonto();
-    renderizarPonto();
+    renderizarPontoUI();
 }
 
-function iniciarIntervalo(){
-    ponto.estado = "intervalo";
+function pausarTrabalho(){
+    if(ponto.estado!=="trabalhando") return;
     ponto.intervalos.push({inicio:new Date().toISOString(), fim:null});
+    ponto.estado = "pausado";
     salvarPonto();
-    renderizarPonto();
+    renderizarPontoUI();
 }
 
-function retornarIntervalo(){
+function retomarTrabalho(){
+    if(ponto.estado!=="pausado") return;
+    let ultimo = ponto.intervalos[ponto.intervalos.length-1];
+    if(ultimo && !ultimo.fim) ultimo.fim = new Date().toISOString();
     ponto.estado = "trabalhando";
-    ponto.intervalos[ponto.intervalos.length-1].fim = new Date().toISOString();
     salvarPonto();
-    renderizarPonto();
+    renderizarPontoUI();
 }
 
-function finalizarServico(){
+function encerrarTrabalho(){
+    if(ponto.estado==="parado") return;
+
+    if(ponto.estado==="pausado"){
+        let ultimo = ponto.intervalos[ponto.intervalos.length-1];
+        if(ultimo && !ultimo.fim) ultimo.fim = new Date().toISOString();
+    }
+
     let km = prompt("KM final (opcional, deixe em branco para pular):","");
     if(km!==null && km.trim()!==""){
         let n = parseFloat(km);
-        if(!isNaN(n) && n>=0) ponto.kmFinal = n;
+        if(!isNaN(n)) ponto.kmFinal = n;
     }
+
     ponto.fim = new Date().toISOString();
-    ponto.estado = "finalizado";
+    ponto.estado = "parado";
     salvarPonto();
-    renderizarPonto();
-
-    salvarHistoricoExpediente();
-
-    let msg = "Expediente finalizado!\nVocê trabalhou "+formatarDuracao(calcularTotalTrabalhado())+" hoje.";
-    if(ponto.kmInicial!=null && ponto.kmFinal!=null){
-        msg += "\nKM rodado: "+(ponto.kmFinal-ponto.kmInicial).toFixed(1)+" km";
-    }
-    alert(msg);
+    renderizarPontoUI();
 }
 
 function resetarPonto(){
-    if(confirm("Tem certeza que deseja resetar o horário? Isso vai apagar o início, intervalos, fim e KM registrados.")){
-        ponto = {estado:"parado", inicio:null, intervalos:[], fim:null, kmInicial:null, kmFinal:null};
-        salvarPonto();
-        renderizarPonto();
-    }
+    if(!confirm("Resetar o controle de ponto? Isso nÃ£o apaga as corridas jÃ¡ registradas.")) return;
+    ponto = {estado:"parado", inicio:null, intervalos:[], fim:null, kmInicial:null, kmFinal:null};
+    salvarPonto();
+    renderizarPontoUI();
 }
 
-function renderizarPonto(){
-    let statusDiv = document.getElementById("pontoStatus");
-    let botoesDiv = document.getElementById("pontoBotoes");
+/* ======================================================================
+   PIX - CHAVES
+   ====================================================================== */
+let chaves = JSON.parse(localStorage.getItem("chavesPix")) || [];
+let editandoChaveIndex = null;
 
-    let statusTexto = "";
-
-    if(ponto.inicio){
-        statusTexto += `🟢 Início: <b>${formatarHora(ponto.inicio)}</b><br>`;
-    }
-    if(ponto.kmInicial!=null){
-        statusTexto += `🛣 KM inicial: <b>${ponto.kmInicial}</b><br>`;
-    }
-    ponto.intervalos.forEach((iv,i)=>{
-        statusTexto += `☕ Intervalo: <b>${formatarHora(iv.inicio)}</b>`;
-        if(iv.fim) statusTexto += ` → Retorno: <b>${formatarHora(iv.fim)}</b>`;
-        statusTexto += `<br>`;
-    });
-    if(ponto.fim){
-        statusTexto += `🔴 Fim: <b>${formatarHora(ponto.fim)}</b><br>`;
-    }
-    if(ponto.kmFinal!=null){
-        statusTexto += `🛣 KM final: <b>${ponto.kmFinal}</b><br>`;
-    }
-    if(ponto.kmInicial!=null && ponto.kmFinal!=null){
-        statusTexto += `📏 KM rodado: <b>${(ponto.kmFinal-ponto.kmInicial).toFixed(1)} km</b><br>`;
-    }
-    if(ponto.inicio){
-        statusTexto += `⏱ Total trabalhado: <b>${formatarDuracao(calcularTotalTrabalhado())}</b>`;
-    }
-
-    statusDiv.innerHTML = statusTexto;
-
-    if(ponto.estado==="trabalhando"){
-        botoesDiv.innerHTML = `
-            <div style="display:flex;gap:8px">
-                <button onclick="finalizarServico()" style="flex:1;background:#d32f2f;color:#fff">⏹ Finalizar Serviço</button>
-                <button onclick="iniciarIntervalo()" style="flex:1;background:#ff9800;color:#fff">☕ Intervalo</button>
-            </div>
-        `;
-    } else if(ponto.estado==="intervalo"){
-        botoesDiv.innerHTML = `<button onclick="retornarIntervalo()" style="background:#00c853;color:#fff">▶ Retornar</button>`;
-    } else {
-        botoesDiv.innerHTML = `<button onclick="iniciarTrabalho()" style="background:#666;color:#fff">▶ Iniciar Trabalho</button>`;
-    }
+function salvarChaves(){
+    localStorage.setItem("chavesPix", JSON.stringify(chaves));
 }
 
-function baixarRelatorio(){
-    let hoje = new Date();
-    let dataStr = hoje.toLocaleDateString("pt-BR");
-    let linhas = [];
+function renderizarChaves(){
+    let lista = document.getElementById("listaChaves");
+    let select = document.getElementById("chaveSelect");
 
-    linhas.push("=================================");
-    linhas.push("   RELATÓRIO DO DIA - " + dataStr);
-    linhas.push("=================================");
-    linhas.push("");
-
-    linhas.push("--- PONTO / EXPEDIENTE ---");
-    if(ponto.inicio){
-        linhas.push("Início: " + formatarHora(ponto.inicio));
-    } else {
-        linhas.push("Nenhum expediente registrado.");
-    }
-    if(ponto.kmInicial!=null) linhas.push("KM inicial: " + ponto.kmInicial);
-
-    ponto.intervalos.forEach((iv,i)=>{
-        let linha = "Intervalo " + (i+1) + ": " + formatarHora(iv.inicio);
-        if(iv.fim) linha += " → Retorno: " + formatarHora(iv.fim);
-        linhas.push(linha);
-    });
-
-    if(ponto.fim) linhas.push("Fim: " + formatarHora(ponto.fim));
-    if(ponto.kmFinal!=null) linhas.push("KM final: " + ponto.kmFinal);
-    if(ponto.kmInicial!=null && ponto.kmFinal!=null){
-        linhas.push("KM rodado: " + (ponto.kmFinal-ponto.kmInicial).toFixed(1) + " km");
-    }
-    if(ponto.inicio){
-        linhas.push("Total trabalhado: " + formatarDuracao(calcularTotalTrabalhado()));
+    if(chaves.length===0){
+        lista.innerHTML = `<div class="semChaves">Nenhuma chave cadastrada</div>`;
+        select.innerHTML = `<option value="">Cadastre uma chave Pix primeiro</option>`;
+        document.getElementById("btnGerar").disabled = true;
+        return;
     }
 
-    linhas.push("");
-    linhas.push("--- CORRIDAS / GANHOS ---");
+    document.getElementById("btnGerar").disabled = false;
 
-    if(corridas.length===0){
-        linhas.push("Nenhuma corrida registrada.");
-    } else {
-        let grupos = {};
-        corridas.forEach(c=>{
-            let chave = chaveHora(c.timestamp);
-            if(!grupos[chave]) grupos[chave]=[];
-            grupos[chave].push(c);
-        });
-
-        Object.keys(grupos).sort().reverse().forEach(chave=>{
-            let lista = grupos[chave];
-            let hora = new Date(lista[0].timestamp).getHours().toString().padStart(2,"0");
-            let totalHora = lista.reduce((s,c)=>s+c.valor,0);
-
-            linhas.push("");
-            linhas.push("Hora " + hora + ":00 - " + hora + ":59  (Total: R$ " + totalHora.toFixed(2) + ")");
-            lista.forEach(c=>{
-                let horaMin = new Date(c.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-                linhas.push("  " + horaMin + " → R$ " + c.valor.toFixed(2));
-            });
-        });
-    }
-
-    let totalGeral = corridas.reduce((a,c)=>a+c.valor,0);
-    linhas.push("");
-    linhas.push("=================================");
-    linhas.push("TOTAL GERAL: R$ " + totalGeral.toFixed(2));
-    linhas.push("Número de corridas: " + corridas.length);
-    linhas.push("=================================");
-
-    let conteudo = linhas.join("\n");
-    let blob = new Blob([conteudo], {type:"text/plain;charset=utf-8"});
-    let url = URL.createObjectURL(blob);
-    let a = document.createElement("a");
-    a.href = url;
-    a.download = "relatorio_" + hoje.toISOString().slice(0,10) + ".txt";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-setInterval(renderizar,30000);
-setInterval(renderizarPonto,30000);
-
-carregarTema();
-carregarMeta();
-renderizar();
-renderizarPonto();
-
-/* ===== CPMA - Painel de faturamento, despesas e produtividade ===== */
-
-let historicoPonto = JSON.parse(localStorage.getItem("historicoPonto")) || [];
-let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
-let periodoCPMA = "dia";
-
-function salvarHistorico(){
-    localStorage.setItem("historicoPonto", JSON.stringify(historicoPonto));
-}
-
-function salvarDespesas(){
-    localStorage.setItem("despesas", JSON.stringify(despesas));
-}
-
-// Guarda o expediente finalizado no histórico, para poder somar horas/KM por período
-function salvarHistoricoExpediente(){
-    let horasMs = calcularTotalTrabalhado();
-    let km = (ponto.kmInicial!=null && ponto.kmFinal!=null) ? (ponto.kmFinal-ponto.kmInicial) : 0;
-
-    historicoPonto.push({
-        data: ponto.inicio,
-        horasMs: horasMs,
-        km: km
-    });
-    salvarHistorico();
-}
-
-function inicioDoPeriodo(periodo){
-    let agora = new Date();
-    let d = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
-
-    if(periodo==="dia"){
-        return d;
-    }
-    if(periodo==="semana"){
-        let diaSemana = d.getDay(); // 0=domingo
-        let diff = diaSemana===0 ? 6 : diaSemana-1; // volta até segunda-feira
-        d.setDate(d.getDate()-diff);
-        return d;
-    }
-    if(periodo==="mes"){
-        return new Date(agora.getFullYear(), agora.getMonth(), 1);
-    }
-    if(periodo==="ano"){
-        return new Date(agora.getFullYear(), 0, 1);
-    }
-    return d;
-}
-
-function formatarHorasMin(ms){
-    if(ms<0) ms=0;
-    let totalMin = Math.floor(ms/60000);
-    let h = Math.floor(totalMin/60);
-    let m = totalMin%60;
-    return h + ":" + m.toString().padStart(2,"0");
-}
-
-function formatarMoedaCPMA(v){
-    if(!isFinite(v)) v = 0;
-    return "R$ " + v.toFixed(2).replace(".",",");
-}
-
-function calcularDadosCPMA(periodo){
-    let inicio = inicioDoPeriodo(periodo);
-    let inicioMs = inicio.getTime();
-    let fimMs = Date.now();
-
-    // Faturamento e viagens
-    let corridasPeriodo = corridas.filter(c=>{
-        let t = new Date(c.timestamp).getTime();
-        return t>=inicioMs && t<=fimMs;
-    });
-    let faturamento = corridasPeriodo.reduce((s,c)=>s+c.valor,0);
-    let totalViagens = corridasPeriodo.length;
-
-    // Despesas
-    let despesasPeriodo = despesas.filter(d=>{
-        let t = new Date(d.timestamp).getTime();
-        return t>=inicioMs && t<=fimMs;
-    });
-    let totalDespesas = despesasPeriodo.reduce((s,d)=>s+d.valor,0);
-
-    // Horas e KM (expedientes já finalizados e guardados no histórico)
-    let horasMs = 0, km = 0;
-    historicoPonto.forEach(h=>{
-        let t = new Date(h.data).getTime();
-        if(t>=inicioMs && t<=fimMs){
-            horasMs += h.horasMs;
-            km += h.km;
-        }
-    });
-
-    // Soma o expediente em andamento (ainda não finalizado) se começou dentro do período
-    if(ponto.inicio && ponto.estado!=="finalizado" && ponto.estado!=="parado"){
-        let tInicio = new Date(ponto.inicio).getTime();
-        if(tInicio>=inicioMs && tInicio<=fimMs){
-            horasMs += calcularTotalTrabalhado();
-            if(ponto.kmInicial!=null && ponto.kmFinal!=null){
-                km += (ponto.kmFinal-ponto.kmInicial);
-            }
-        }
-    }
-
-    let horasDecimal = horasMs/3600000;
-    let saldo = faturamento - totalDespesas;
-
-    return {
-        faturamento, totalDespesas, saldo, totalViagens, horasMs, horasDecimal, km,
-        despesasPeriodo
-    };
-}
-
-function mudarPeriodoCPMA(periodo){
-    periodoCPMA = periodo;
-    document.querySelectorAll("#cpmaTabs button").forEach(b=>{
-        b.classList.toggle("ativa", b.dataset.periodo===periodo);
-    });
-
-    let titulos = {dia:"Faturamento Hoje", semana:"Faturamento Semana", mes:"Faturamento Mês", ano:"Faturamento Ano"};
-    document.getElementById("cpmaTituloFaturamento").innerText = titulos[periodo];
-
-    atualizarCPMA();
-}
-
-function atualizarCPMA(){
-    let d = calcularDadosCPMA(periodoCPMA);
-
-    document.getElementById("cpmaFaturamento").innerText = formatarMoedaCPMA(d.faturamento);
-    document.getElementById("cpmaDespesas").innerText = formatarMoedaCPMA(d.totalDespesas);
-    document.getElementById("cpmaSaldo").innerText = formatarMoedaCPMA(d.saldo);
-
-    document.getElementById("cpmaViagens").innerText = d.totalViagens;
-    document.getElementById("cpmaHoras").innerText = formatarHorasMin(d.horasMs);
-    document.getElementById("cpmaKm").innerText = d.km.toFixed(2);
-
-    document.getElementById("cpmaFatViagem").innerText = formatarMoedaCPMA(d.totalViagens>0 ? d.faturamento/d.totalViagens : 0);
-    document.getElementById("cpmaFatHora").innerText = formatarMoedaCPMA(d.horasDecimal>0 ? d.faturamento/d.horasDecimal : 0);
-    document.getElementById("cpmaFatKm").innerText = formatarMoedaCPMA(d.km>0 ? d.faturamento/d.km : 0);
-
-    document.getElementById("cpmaCustoViagem").innerText = formatarMoedaCPMA(d.totalViagens>0 ? d.totalDespesas/d.totalViagens : 0);
-    document.getElementById("cpmaCustoHora").innerText = formatarMoedaCPMA(d.horasDecimal>0 ? d.totalDespesas/d.horasDecimal : 0);
-    document.getElementById("cpmaCustoKm").innerText = formatarMoedaCPMA(d.km>0 ? d.totalDespesas/d.km : 0);
-
-    document.getElementById("cpmaLucroViagem").innerText = formatarMoedaCPMA(d.totalViagens>0 ? d.saldo/d.totalViagens : 0);
-    document.getElementById("cpmaLucroHora").innerText = formatarMoedaCPMA(d.horasDecimal>0 ? d.saldo/d.horasDecimal : 0);
-    document.getElementById("cpmaLucroKm").innerText = formatarMoedaCPMA(d.km>0 ? d.saldo/d.km : 0);
-
-    renderizarListaDespesas(d.despesasPeriodo);
-}
-
-function renderizarListaDespesas(lista){
-    let container = document.getElementById("cpmaListaDespesas");
-    container.innerHTML = "";
-
-    if(lista.length===0) return;
-
-    let titulo = document.createElement("div");
-    titulo.style.cssText = "font-size:13px;opacity:.6;margin-bottom:8px";
-    titulo.innerText = "Despesas do período:";
-    container.appendChild(titulo);
-
-    // ordena da mais recente para a mais antiga
-    let ordenadas = lista.map(d=>({...d, indexOriginal: despesas.indexOf(d)})).sort((a,b)=> new Date(b.timestamp)-new Date(a.timestamp));
-
-    ordenadas.forEach(d=>{
+    lista.innerHTML = "";
+    chaves.forEach((c,i)=>{
         let div = document.createElement("div");
-        div.className = "cpmaDespesaItem";
-        let dataFormatada = new Date(d.timestamp).toLocaleDateString("pt-BR");
+        div.className = "chaveItem";
         div.innerHTML = `
-            <div>${dataFormatada}${d.descricao ? " · "+d.descricao : ""}</div>
-            <div style="display:flex;align-items:center;gap:8px">
-                <b>${formatarMoedaCPMA(d.valor)}</b>
-                <button onclick="excluirDespesa(${d.indexOriginal})" style="width:auto;padding:5px 8px;font-size:12px;background:rgba(255,255,255,.15);color:inherit;border-radius:8px">🗑️</button>
+            <div class="chaveInfo">
+                <div class="chaveNome">${c.nome}</div>
+                <div class="chaveValor">${c.valor}</div>
+            </div>
+            <div class="chaveActions">
+                <button onclick="abrirFormChave(${i})">âœï¸</button>
+                <button onclick="excluirChave(${i})">ðŸ—‘ï¸</button>
             </div>
         `;
-        container.appendChild(div);
+        lista.appendChild(div);
     });
+
+    let selecionadoAnterior = select.value;
+    select.innerHTML = chaves.map((c,i)=>`<option value="${i}">${c.nome}</option>`).join("");
+    if(selecionadoAnterior!=="" && chaves[selecionadoAnterior]) select.value = selecionadoAnterior;
 }
 
-function registrarDespesa(){
-    let valorStr = prompt("Valor da despesa (R$):","");
-    if(valorStr===null) return;
-    let valor = parseFloat(valorStr.replace(",","."));
-    if(isNaN(valor) || valor<=0){
-        alert("Digite um valor válido.");
+function abrirChavesModal(){
+    document.getElementById("chavesOverlay").style.display = "block";
+}
+
+function fecharChavesModal(){
+    document.getElementById("chavesOverlay").style.display = "none";
+    cancelarFormChave();
+}
+
+function abrirFormChave(index){
+    editandoChaveIndex = index;
+    let form = document.getElementById("formChave");
+    let inputNome = document.getElementById("inputNomeChave");
+    let inputValor = document.getElementById("inputValorChave");
+
+    if(index!==null && chaves[index]){
+        inputNome.value = chaves[index].nome;
+        inputValor.value = chaves[index].valor;
+    } else {
+        inputNome.value = "";
+        inputValor.value = "";
+    }
+
+    form.classList.add("visivel");
+}
+
+function salvarFormChave(){
+    let nome = document.getElementById("inputNomeChave").value.trim();
+    let valor = document.getElementById("inputValorChave").value.trim();
+
+    if(!nome || !valor){
+        alert("Preencha nome e chave Pix");
         return;
     }
 
-    let descricao = prompt("Descrição (opcional, ex: combustível, manutenção):","") || "";
-
-    despesas.push({
-        valor,
-        descricao: descricao.trim(),
-        timestamp: new Date().toISOString()
-    });
-    salvarDespesas();
-    atualizarCPMA();
-}
-
-function excluirDespesa(index){
-    despesas.splice(index,1);
-    salvarDespesas();
-    atualizarCPMA();
-}
-
-function abrirCPMA(){
-    document.getElementById("appContainer").style.display = "none";
-    document.getElementById("telaCPMA").style.display = "block";
-    atualizarInfoVeiculoCPMA();
-    mudarPeriodoCPMA(periodoCPMA);
-}
-
-function fecharCPMA(){
-    document.getElementById("telaCPMA").style.display = "none";
-    document.getElementById("appContainer").style.display = "block";
-}
-
-/* ===== PIX - Cobrança via Pix (QR Code) ===== */
-
-function crc16(str) {
-    let crc = 0xFFFF;
-
-    for (let c = 0; c < str.length; c++) {
-        crc ^= str.charCodeAt(c) << 8;
-
-        for (let i = 0; i < 8; i++) {
-            if ((crc & 0x8000) !== 0) {
-                crc = (crc << 1) ^ 0x1021;
-            } else {
-                crc <<= 1;
-            }
-        }
+    if(editandoChaveIndex!==null && chaves[editandoChaveIndex]){
+        chaves[editandoChaveIndex] = {nome, valor};
+    } else {
+        chaves.push({nome, valor});
     }
 
-    return (crc & 0xFFFF)
-        .toString(16)
-        .toUpperCase()
-        .padStart(4, '0');
+    salvarChaves();
+    renderizarChaves();
+    cancelarFormChave();
 }
 
-function campo(id, valor) {
-    return id + valor.length.toString().padStart(2, '0') + valor;
+function cancelarFormChave(){
+    editandoChaveIndex = null;
+    document.getElementById("formChave").classList.remove("visivel");
+    document.getElementById("inputNomeChave").value = "";
+    document.getElementById("inputValorChave").value = "";
 }
 
-function carregarChavesPix() {
-    let salvo = localStorage.getItem("pixChaves");
-    if (!salvo) return null;
-
-    try {
-        let chaves = JSON.parse(salvo);
-        return Array.isArray(chaves) && chaves.length ? chaves : null;
-    } catch (e) {
-        return null;
-    }
+function excluirChave(index){
+    if(!confirm("Excluir esta chave Pix?")) return;
+    chaves.splice(index,1);
+    salvarChaves();
+    renderizarChaves();
 }
 
-function sanitizarNomePix(nome) {
-    let limpo = nome
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .toUpperCase()
-        .replace(/[^A-Z0-9 ]/g, "")
-        .trim()
-        .substring(0, 25);
-
-    return limpo || "PIX";
-}
-
-function popularSelectChavesPix(chaves) {
-    let select = document.getElementById("tipo");
-    select.innerHTML = "";
-
-    chaves.forEach((c, i) => {
-        let opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = c.nome;
-        select.appendChild(opt);
-    });
-}
-
-function abrirConfigPix(primeiraVez) {
-    let chaves = carregarChavesPix() || [];
-
-    document.getElementById("nome1").value = chaves[0] ? chaves[0].nome : "";
-    document.getElementById("chave1").value = chaves[0] ? chaves[0].chave : "";
-    document.getElementById("nome2").value = chaves[1] ? chaves[1].nome : "";
-    document.getElementById("chave2").value = chaves[1] ? chaves[1].chave : "";
-    document.getElementById("nome3").value = chaves[2] ? chaves[2].nome : "";
-    document.getElementById("chave3").value = chaves[2] ? chaves[2].chave : "";
-
-    document.getElementById("formArea").style.display = "none";
-    document.getElementById("qrArea").style.display = "none";
-    document.getElementById("configArea").style.display = "block";
-
-    document.getElementById("btnVoltarConfig").style.display = primeiraVez ? "none" : "block";
-}
-
-function fecharConfigPix() {
-    document.getElementById("configArea").style.display = "none";
-    document.getElementById("formArea").style.display = "block";
-}
-
-function salvarChaves() {
-    let campos = [
-        { nome: document.getElementById("nome1").value.trim(), chave: document.getElementById("chave1").value.trim() },
-        { nome: document.getElementById("nome2").value.trim(), chave: document.getElementById("chave2").value.trim() },
-        { nome: document.getElementById("nome3").value.trim(), chave: document.getElementById("chave3").value.trim() }
-    ];
-
-    let chaves = campos
-        .filter(c => c.nome && c.chave)
-        .map(c => ({ nome: sanitizarNomePix(c.nome), chave: c.chave }));
-
-    if (chaves.length === 0) {
-        alert("Cadastre pelo menos uma chave Pix para continuar.");
-        return;
-    }
-
-    localStorage.setItem("pixChaves", JSON.stringify(chaves));
-    popularSelectChavesPix(chaves);
-
-    document.getElementById("configArea").style.display = "none";
-    document.getElementById("formArea").style.display = "block";
-}
-
+/* ======================================================================
+   PIX - TAXA (+20%)
+   ====================================================================== */
 let taxaAtiva = false;
 
-function toggleTaxa() {
+function toggleTaxa(){
     taxaAtiva = !taxaAtiva;
     document.getElementById("btnRaio").classList.toggle("ativo", taxaAtiva);
     atualizarInfoTaxa();
 }
 
-function atualizarInfoTaxa() {
+function atualizarInfoTaxa(){
+    let valorInput = document.getElementById("valor");
     let info = document.getElementById("infoTaxa");
-    let valorDigitado = parseFloat(document.getElementById("valor").value);
+    let valor = parseFloat(valorInput.value);
 
-    if (taxaAtiva && !isNaN(valorDigitado) && valorDigitado > 0) {
-        let final = (valorDigitado * 1.2).toFixed(2);
-        info.textContent = "Taxa de 20% ativada — valor final: R$ " + final;
-        info.classList.add("visivel");
-    } else if (taxaAtiva) {
-        info.textContent = "Taxa de 20% ativada";
+    if(taxaAtiva && !isNaN(valor) && valor>0){
+        let comTaxa = valor*1.2;
+        info.innerText = `Valor original R$ ${valor.toFixed(2)} + 20% = R$ ${comTaxa.toFixed(2)}`;
         info.classList.add("visivel");
     } else {
+        info.innerText = "";
         info.classList.remove("visivel");
     }
 }
 
-function renderizarQR(payload) {
-    document.getElementById("qrcode").innerHTML = "";
+/* ======================================================================
+   PIX - GERAÃ‡ÃƒO DO QR CODE (payload BR Code / EMV)
+   ====================================================================== */
+function crc16(str){
+    let crc = 0xFFFF;
+    for(let i=0;i<str.length;i++){
+        crc ^= str.charCodeAt(i) << 8;
+        for(let b=0;b<8;b++){
+            crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+            crc &= 0xFFFF;
+        }
+    }
+    return crc.toString(16).toUpperCase().padStart(4,"0");
+}
 
+function emv(id,value){
+    let len = value.length.toString().padStart(2,"0");
+    return `${id}${len}${value}`;
+}
+
+function montarPayloadPix(chave, valor, nome, cidade){
+    nome = (nome||"RECEBEDOR").substring(0,25).toUpperCase();
+    cidade = (cidade||"BRASIL").substring(0,15).toUpperCase();
+
+    let merchantAccount = emv("00","BR.GOV.BCB.PIX") + emv("01",chave);
+    let campos =
+        emv("00","01") +
+        emv("26",merchantAccount) +
+        emv("52","0000") +
+        emv("53","986") +
+        (valor ? emv("54",valor.toFixed(2)) : "") +
+        emv("58","BR") +
+        emv("59",nome) +
+        emv("60",cidade) +
+        emv("62",emv("05","***"));
+
+    let semCrc = campos + "6304";
+    return semCrc + crc16(semCrc);
+}
+
+function gerarPix(){
+    let select = document.getElementById("chaveSelect");
+    let index = select.value;
+
+    if(index===""||!chaves[index]){
+        alert("Cadastre e selecione uma chave Pix");
+        return;
+    }
+
+    let chave = chaves[index];
+    let valorInput = parseFloat(document.getElementById("valor").value);
+    let valorFinal = !isNaN(valorInput) && valorInput>0
+        ? (taxaAtiva ? valorInput*1.2 : valorInput)
+        : null;
+
+    let payload = montarPayloadPix(chave.valor, valorFinal, chave.nome, "BRASIL");
+
+    document.getElementById("qrcode").innerHTML = "";
     new QRCode(document.getElementById("qrcode"), {
         text: payload,
-        width: 260,
-        height: 260
+        width: 220,
+        height: 220
     });
 
     document.getElementById("formArea").style.display = "none";
     document.getElementById("qrArea").style.display = "block";
 }
 
-function gerarPix() {
-
-    let chaves = carregarChavesPix();
-
-    if (!chaves || chaves.length === 0) {
-        abrirConfigPix(true);
-        return;
-    }
-
-    let idx = parseInt(document.getElementById("tipo").value, 10);
-    let selecionada = chaves[idx];
-
-    if (!selecionada) {
-        alert("Selecione uma chave Pix válida.");
-        return;
-    }
-
-    let chave = selecionada.chave;
-    let nome = selecionada.nome;
-
-    let valor = document.getElementById("valor").value;
-
-    if (taxaAtiva && valor) {
-        valor = (parseFloat(valor) * 1.2).toFixed(2);
-    }
-
-    let payload =
-        campo("00", "01") +
-
-        campo("26",
-            campo("00", "BR.GOV.BCB.PIX") +
-            campo("01", chave)
-        ) +
-
-        campo("52", "0000") +
-        campo("53", "986") +
-
-        (valor
-            ? campo("54", parseFloat(valor).toFixed(2))
-            : "") +
-
-        campo("58", "BR") +
-        campo("59", nome) +
-        campo("60", "MANAUS") +
-        campo("62", campo("05", "***"));
-
-    payload += "6304";
-    payload += crc16(payload);
-
-    salvarEstadoPix(payload);
-    renderizarQR(payload);
+function voltar(){
+    document.getElementById("qrArea").style.display = "none";
+    document.getElementById("formArea").style.display = "block";
 }
 
-function salvarEstadoPix(payload) {
-    let estado = {
-        tipoIndex: document.getElementById("tipo").value,
-        valor: document.getElementById("valor").value,
-        taxaAtiva: taxaAtiva,
-        payload: payload || null
-    };
-    localStorage.setItem("pixEstado", JSON.stringify(estado));
-}
-
-function carregarEstadoPix() {
-    let salvo = localStorage.getItem("pixEstado");
-    if (!salvo) return;
-
-    let estado = JSON.parse(salvo);
-
-    if (estado.tipoIndex !== undefined && document.querySelector('#tipo option[value="' + estado.tipoIndex + '"]')) {
-        document.getElementById("tipo").value = estado.tipoIndex;
-    }
-    document.getElementById("valor").value = estado.valor || "";
-
-    taxaAtiva = !!estado.taxaAtiva;
-    document.getElementById("btnRaio").classList.toggle("ativo", taxaAtiva);
-    atualizarInfoTaxa();
-
-    if (estado.payload) {
-        renderizarQR(estado.payload);
-    }
-}
-
-function resetarPix() {
-    localStorage.removeItem("pixEstado");
-
-    document.getElementById("tipo").selectedIndex = 0;
+function resetar(){
+    if(!confirm("Limpar o formulÃ¡rio de cobranÃ§a Pix?")) return;
     document.getElementById("valor").value = "";
-
     taxaAtiva = false;
     document.getElementById("btnRaio").classList.remove("ativo");
     atualizarInfoTaxa();
-
-    document.getElementById("qrcode").innerHTML = "";
-    document.getElementById("qrArea").style.display = "none";
-    document.getElementById("formArea").style.display = "block";
+    voltar();
 }
 
-function iniciarPix() {
-    let chaves = carregarChavesPix();
-
-    if (!chaves) {
-        abrirConfigPix(true);
-    } else {
-        popularSelectChavesPix(chaves);
-        carregarEstadoPix();
-    }
+/* ======================================================================
+   PIX - CONFIRMAÃ‡ÃƒO E AVALIAÃ‡ÃƒO
+   ====================================================================== */
+function confirmar(){
+    document.getElementById("overlay").style.display = "block";
+    document.querySelectorAll(".star").forEach(s=>s.classList.remove("active"));
 }
 
-function voltarPix() {
-    document.getElementById("qrArea").style.display = "none";
-    document.getElementById("formArea").style.display = "block";
-    document.getElementById("qrcode").innerHTML = "";
-}
-
-function confirmarPix() {
-    document.getElementById("pixOverlayEl").style.display = "flex";
-}
-
-function voltarConfirmacaoPix() {
-    document.getElementById("pixOverlayEl").style.display = "none";
-
-    voltarPix();
-    resetarPix();
-    resetStarsPix();
-}
-
-function avaliarPix(nota) {
-    let stars = document.querySelectorAll(".pixStar");
-
-    stars.forEach((star, i) => {
-        if (i < nota) {
-            star.classList.add("active");
-        } else {
-            star.classList.remove("active");
-        }
+function avaliar(nota){
+    document.querySelectorAll(".star").forEach((s,i)=>{
+        s.classList.toggle("active", i<nota);
     });
 }
 
-function resetStarsPix() {
-    document.querySelectorAll(".pixStar").forEach(star => {
-        star.classList.remove("active");
+function voltarConfirmacao(){
+    document.getElementById("overlay").style.display = "none";
+    voltar();
+}
+
+/* ======================================================================
+   RELATÃ“RIO
+   ====================================================================== */
+function baixarRelatorio(){
+    let hoje = new Date();
+    let corridasHoje = corridas.filter(c=>{
+        let d = new Date(c.timestamp);
+        return d.toDateString()===hoje.toDateString();
     });
+
+    let total = corridasHoje.reduce((a,c)=>a+c.valor,0);
+
+    let linhas = corridasHoje.map(c=>{
+        let h = new Date(c.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        return `${h} - R$ ${c.valor.toFixed(2)}`;
+    });
+
+    let texto =
+        `RelatÃ³rio de corridas - ${hoje.toLocaleDateString()}\n` +
+        `${"=".repeat(30)}\n` +
+        linhas.join("\n") +
+        `\n${"=".repeat(30)}\n` +
+        `Total: R$ ${total.toFixed(2)}\n` +
+        `Corridas: ${corridasHoje.length}`;
+
+    let blob = new Blob([texto], {type:"text/plain"});
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = `relatorio-${hoje.toISOString().slice(0,10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
-function abrirPix(){
-    document.getElementById("appContainer").style.display = "none";
-    document.getElementById("telaPix").style.display = "block";
-}
+/* ======================================================================
+   INICIALIZAÃ‡ÃƒO
+   ====================================================================== */
+window.addEventListener("DOMContentLoaded", ()=>{
+    carregarTema();
+    ajustarTela();
+    carregarMeta();
+    renderizar();
+    renderizarPontoUI();
+    renderizarChaves();
 
-function fecharPix(){
-    document.getElementById("telaPix").style.display = "none";
-    document.getElementById("appContainer").style.display = "block";
-}
-
-/* ===== Controle de Acesso (login / teste grátis / plano mensal) ===== */
-
-const CODIGOS_TESTE = ["E66J6S6V", "92RM47AP", "QJ84V46F", "37TQ7D8K", "4Q64WVA4", "82UK9F6T", "2R6UM7Q2", "2UX9P3W6", "PHS6397C", "R6XM9U64", "T598PN3B", "ND29X6C5", "49R32EWH", "HE43N2A4", "Z3X27QW6", "52X8F2QW", "8AW42M4S", "5P96K5XN", "46BF2K9A", "MW52F29V", "G8ND596V", "44FZDV68", "U645WV9Z", "QEG3P522", "9F4UJ6E2", "7C6JDY32", "65T97DNX", "Y7F5RA47", "KX9S422G", "F6Y63A4K", "N6G6T6Z7", "6UBK42T8", "4S5Q2UJ6", "765EMJV6", "28MDG69Y", "V34D5Z2G", "68U7Z5QM", "8CY853JE", "68WY93XG", "3C44DE3Z", "RUP3B425", "P5V54GD8", "93SH5GM6", "52ZPBR86", "N374GT4S", "QJC552S7", "2G29J9FH", "42GPF6Z2", "S9J79N4E", "YZU65M77", "TEK2587Q", "29TEB24C", "78MA5VF6", "67PSB3C8", "32BDMZ38", "UTH8254Q", "AJB65V95", "4Y8N5VG4", "47P7U3QK", "QUMS5996", "E74TFZ92", "54M4EJB6", "6DT953WQ", "522J4YSP", "34UWXV62", "2KB58NZ3", "4D5EJ53X", "6NW7EY28", "C5UA329K", "2NTQ6C37", "4FH43KR7", "6SM7CW66", "YXH4N955", "FC6J3H67", "U27C78XF", "T7Q499DC", "Y7R84EM7", "942SN8FU", "44KS4J5T", "898KVRA5", "F3475WNS", "DER4Z567", "PZ9BX428", "Z26VJ4E2", "3BDT4H47", "99K46RSH", "D7Z656WY", "K38F2ND6", "3P9VW97J", "674CZH9X", "9XY8W2F6", "EC83X4R2", "S332QM8T", "29KVF32A", "EKQ44Y74", "663PNC7S", "42X4UF2B", "62DT9K4N", "9QE95D3K", "9H5XC87J", "HZ6Q225R", "5C93WPF6", "5H5C74ED", "2D9JQ48V", "2Y32ZXG3", "6Q5B6KT8", "87GFC82P", "A5D67QP7", "5KD7TM26", "SXA878B2", "537NGM8T", "XQS596V2", "GJ66D55V", "BU3C76T8", "75J95BKQ", "AX38V5E5", "4S5C6ZY7", "Q8GMP492", "92FQM8Y6", "326T8BGQ", "QJ33S24P", "UQS2282T", "NGJ3V565", "V58KZJ79", "PR3S23G2", "9UNMD623", "S82D7GJ2", "4A4X46GM", "RCP2B798", "23FU7T3S", "ATQ9S795", "XT2NG587", "A3G8TJ58", "AY2EC663", "W43N9U4Q", "KV276D3H", "Z543DUS9", "54XS3BY5", "YB4F827A", "4NDGC886", "F7H6Z5W6", "2M68H6ED", "JT76Y94H", "64TN25RD", "JRC8254X", "E348FW7H", "237YPG7J", "6E9DC7H9", "Y76VUA26", "75E8XZ7U", "F598KY2N", "PG692JZ6", "26HX5YM9", "98CD4H5G", "T2JK4A69", "Y65K4PF5", "X53K4SY2", "S29Q95FH", "6698MCQD", "6D7RY28M", "8WBVS465", "W62G9YS3", "2287NCXZ", "R6BWK674", "4X6S4B8M", "RW528JC3", "589X9URW", "277S6AQM", "KR5G344T", "H36F3PJ7", "9VBQ93T5", "9Y26AH4W", "3XR84H2N", "69PZ54NF", "5QCN73F7", "M723YA4D", "9K2VRU44", "M47NSW48", "E6XQK969", "3R8W25EQ", "RWK8475S", "Z6TG2D43", "789ZMQY9", "5E5MQZ23", "3423MURW", "YU7Q56F7", "5JE934UX", "6WN7J77E", "44X3UA2K", "X24FR5G7", "C7724QHX", "7R86X9UM", "7748VDBF", "6C6BEX73", "2KSMX953", "EDUS4672", "UZY769B9", "WX52D66Y", "E5J98Q7V", "J62YG4N8", "EZS39M87", "E9C7R8G3", "H6C226JV", "55XPJ76Q", "9G95RBV7", "G4TC62X8", "R7Q68S6Z", "V98B4PH5", "PA7848HX", "7ZU8JV25", "5A2HPY98", "ZF82DE97", "46KDAU96", "336NPUC8", "NU39A2B3", "2N2G24PW", "EW3N3Q82", "N64H22JX", "76A7T7HS", "R2YD68G3", "97HBMF38", "7A4NTW94", "AUX9354F", "2UFG898J", "5UB22P9V", "BW678MX8", "5DM2A49S", "7678MZWQ", "V3S6WF93", "9BGK532R", "3348YRPB", "U56KXM96", "WP22JQ69", "H365Q5RF", "6UC4VK65", "D9K2ET95", "849BTP8C", "Y54P82BG", "99WSD23Q", "H29FV6R3", "8BWG5K22", "A2VB5Z95", "TA2537RG", "NB976M3E", "6A2Y3U3N", "3XUA64P6", "E5686GST", "36E2BY8J", "4ZF4RK39", "8B9X7HC2", "27BTU83X", "U8A66K8Y", "AQ79EY63", "E94M94KR", "P2M6U48G", "UKS475G3", "E384WHJ9", "C57V4GK6", "6WJSC776", "C65E4J8B", "RW26MF49", "6VJD629M", "93Z3AG4P", "T95B3Y6G", "8SF9M9E8", "R8HF4T55", "67G9E4JH", "5835BKCV", "5N3WC5A5", "R762YUM2", "Z9XR684S", "UCZ7826V", "ZW2XC335", "U5KT44D3", "5AM3G8R4", "959BX9RV", "R9G83JQ9", "Y8QCM768", "5J22MVQ4", "XRE228D5", "6HFP56A8", "5D9W7J6U", "9ZQD2V89", "2R6P7T8S", "35SBZQ82", "63S3CDF9", "4VF3U67G", "E9828ANP", "4R32X9EG", "699YJV7M", "UA74Y35T", "K2TU547H", "9ZFB53T5", "4VX72A2G", "KQ3C532R", "3RV26E6A", "U23P2RM3", "5X42S3MH", "59P4VC7J", "PD837U6F", "Z7QM23N3", "4B3TY2Q6", "EB7R3S36", "Q3Z6GA98", "T5M725UV", "6P6B2RE2", "C34T2Q4V", "54QE6F6K", "9QJM9V54", "9KS999TU", "UY4A277Z", "C76W2Q8E", "68PKH55A", "32TUE7M6", "363R3FMB", "EGV2X558", "2ZU3C54K", "E4H872TZ", "297KUC9H", "JZN3696D", "UQW568R4", "Y6E95F8J", "Y7B47PC3", "76FBP6X8", "82M5DH7B", "E34VS4B8", "CS8WG398", "3TB6V36Q", "EV736SR2", "Q449A5HY", "WC434UK6", "2CQR829U", "25Q2XE2M", "MA682J7F", "6445GKUB", "2457MQUC", "6E442VAB", "5G8ZQ6W5", "9ZJ55Y7R", "E8N7HS57", "B6VRH729", "CQ54X49N", "AG2XY254", "XY7EV983", "F7U476TJ", "686NSG4V", "QNK8884U", "7GCKJ545", "889ZE9FP", "2M638WPZ", "H8KU7B66", "3HYSX534", "3TAG437R", "H43MQV76", "RK9TS463", "474XRJK3", "PV9F3C88", "NR643A9S", "98MB5PD5", "CY875H6V", "37KQ6N2T", "3X7M36DS", "C9JX7B98", "G3S6T33W", "5CHQ8T93", "K8XV649F", "6KCQ362T", "223MP6RA", "C9N56F7T", "Q83NV2M4", "HKG49J47", "Y729KWJ8", "5XJ37A2W", "Q965B7ZA", "8XK645TM", "3ZP3W43M", "GV7395SH", "766CG4ZX", "67EPHG38", "Q69CK9T9", "8Q98VSA2", "D4G753TN", "VB273H9J", "XV72N4Q5", "7DK2M8B6", "S68AKC27", "33FU5T9Z", "2H328DQF", "PH2U68M2", "EV745NM3", "R4X3M2Y5", "P996VN2G", "47SG28WQ", "KJ4F55W9", "7C4HN4J3", "34WUR66F", "T84PEM72", "2NH5R7Z9", "SPEA5482", "48F8SV5K", "4X99T5WH", "F2674VPU", "2F8GX3Z6", "A9D953NP", "YKW228P5", "2A3J8HX7", "H39E27AT", "98U3GWS3", "C43M24BP", "T2EY4K35", "7998VQXF", "4F4NK5W8", "N28SRG34", "U2A9J6D8", "264KYW6J", "SA86F84D", "69JRTX97", "5PGD63H8", "E6TNM476", "99N4K6MZ", "74WC5M8X", "7CRK6T84", "5A8DVQ46", "R5D68J8E", "9B8YT2E3", "CV43DM25", "AM924R3H", "H6ENB853", "772EA3CB", "5Y97QM5D", "YE64CN42", "7M6UN9K6", "9777PTAV", "E727Y5FK", "WJ6343QY", "544K7UHC", "WNXC7523", "69K9N9DR", "H488E4VJ", "4ZQT53M7", "Q6EMF929", "26R63DFG", "C7P24AS3", "3Z2A94TQ", "8G526VNK", "VH4T52Q8", "87P2ASW4", "VR797FK7", "UH68AD97", "DZ73VQ33", "7E2KB9Y4", "32K82MET", "5A9C55ZH", "PQM22G96", "G8NE2R74", "399DF2AR", "99VER48J", "2Q2KZN56", "GN27Y6B2", "3THX6W84", "CA27SZ22", "5D5M5A9W", "B5GD46Q6", "D4UH2N45", "3AC2WZ67", "58FHM2Y3", "UM39AZ42", "9P8UW5S5", "6ATUK646", "J33K7U5S", "E557VZ8D", "K88R5M7U", "V87BW62K", "6HDGE534", "PC647VB5", "PRY4447J", "22D6ZT7X", "56AS44UR", "GR9932PF", "C6X8G9H4", "Q8R67F5B", "69WUFH76", "U8FW57S6", "WDZ45S33", "V93XMT52", "26M27DCB", "787WY4CX", "69BAMZ47", "82QHF83W", "JN4DW276", "H63T22SV", "K728C2DR", "32GMW2T4", "A78V6PG2", "78TSFK66", "K5AVT458", "ZDJ6S357", "54TE2ZJ7", "8G67CE5D", "W565BUQ6", "YC52AB66", "J3W85M2S", "SW8H9R36", "23SX2GZ5", "C8K2Z3A4", "6Z546BSH", "GEB4Q354", "G35H84WZ", "SZG3992Q", "MXR734Z3", "76QUPJ69", "3A4G84WN", "29MK53HE", "UFY95A43", "374K2USB", "YFR2J525", "88MQG6N6", "YM33KU85", "8K66GD2P", "R7HXE477", "278JKNX5", "C8YK7T53", "7XP7SQ65", "HR67K3Q4", "WNV829A2", "9TW2A8V7", "H237F8NG", "M5KWE774", "9V5ADW75", "368PRHQ2", "UN3P3V49", "GKV6B646", "94VY67TK", "EW4K922V", "K46U2BM8", "42D4CA8M", "N38K47EM", "79AH9PE2", "2548TUPE", "8C93Z4HB", "JP9C3U92", "7WA84P7V", "U6RJ394S", "524BCE4R", "7RU45A3S", "5AT25J4F", "74M8HV2E", "R2F23M3Z", "4N5E5W9X", "8GUT5F97", "MTF8N293", "3NE2K8A4", "8JW943GP", "K87T7X9R", "55ZPJ8A6", "C9T8Y42B", "R6F6KD55", "7B4M88PX", "55W4TPH5", "U2T4V64F", "V96J3KR4", "MKD34Q97", "85QF34TY", "28YA56CR", "JZ525R3M", "T4UKM668", "5ZJ2RK38", "77FPJ4X5", "9ZC25KU4", "9F9Q87KH", "78FS6Q8R", "4XP9CB36", "ZS3PC843", "7S44Y5QM", "24H6XZU7", "C46EUR29", "4KSV2Z87", "RA769YX9", "59T8D2BK", "49E89GNT", "BX3GK679", "637CZ7GV", "8S3N4WC8", "6AZWG454", "RK8454VP", "H75RD23P", "9FZ5MR85", "32BVJ4C8", "342SZE7T", "P24ZN89C", "GA9KT379", "45E5U2YQ", "9V6A6P7D", "GYB6822H", "86QC52HU", "B2226MSQ", "5R5HD6S8", "7DJ3RE55", "67GX77CK", "88M39YGW", "767QTGV2", "7XT6MU43", "M8X63EQ6", "JVAF7835", "QY6W329J", "2S66VBK4", "7YX86SZ5", "64BA89NF", "R29YA4X7", "M8FN245B", "4R7ZH85G", "3E6AV8X8", "39PX3G4D", "W3A2G55S", "K55F45BS", "EJ45XA54", "3MDPN977", "327Y4DVA", "MUB72J48", "F62Z9PH4", "72QG63RH", "D55Y5C7U", "NSMV9884", "8P8Q93NR", "CJE2785X", "625V7GXM", "36WRE99M", "4R43N6WQ", "SQYE3975", "5RHUD599", "S3MB457D", "9C5VSN53", "U7F4J3A5", "63SXQ72A", "6JXA65U9", "8JWA3G84", "8MV8DR46", "TSX675E8", "7Q44J8PH", "YN275S4Z", "7P8KT36W", "G8443PQR", "4AD5W78G", "M9H9W2V9", "86C9BGD8", "KE32B5A7", "R4SD55W5", "SCP6N486", "4Z227QAK", "C2G3MK23", "5ZK4T8D5", "TH27W3E2", "84B46GQZ", "TW5Y964F", "A2H3X7Q7", "6Z9YK68C", "M35ZTJ72", "7CF38B4R", "KS2R3C89", "UJ52PM55", "AW72G7M7", "H2N63MX5", "9HT3Q46F", "6PF485RA", "VU995N2F", "6X8JM4G3", "J27VS4W7", "9B6XD36E", "Y796Q5KB", "Q7P2K58B", "D9BR6N94", "QS43W97D", "6EX8F6W2", "F825W9DY", "GP47BC95", "23HFSR59", "885R9GBW", "38Y3CPS4", "87A5X2UD", "27DVBA84", "58NB4QV5", "X9CZ5U97", "29N5S3UJ", "Q392F7DH", "28FR2GZ9", "C2N497KY", "TXN723F2", "6ZT66W6G", "65MNG5D9", "6SX4NQ78", "8P92RQS8", "E6R4BF34", "MZW96E89", "Z6C4NX55", "W3YG4V32", "4R7V64SJ", "39DUN8G4", "59XSE49B", "KA9M695V", "Q382DM5A", "HNQ8687F", "W3K455DY", "G78AD25Q", "E437AQU9", "39P44CUB", "ZJ224PN4", "3M6UK97T", "DT2425JM", "3RBQ7U59", "X9JUR223", "5AR6J52K", "CQ28JH59", "69SA38YC", "HB2T49C2", "RK7A684Q", "6T9NCE38", "7W834DYB", "53Z8MYB2", "9ED25T6B", "Z797FH5S", "8E7X9D7A", "276KW6DJ", "KJ4293AC", "D4TEW454", "N54JD5Q6", "W4E62RD3", "U65N4M7V", "2BF87XM3", "F8S27U4Z", "9VZP247S", "S4Z55C8B", "4AE6JW32", "9XH2YR35", "F4WV55H2", "39U8P2HT", "856YX2SP", "23A8V9CF", "RGS7556B", "7XMD3W89", "Y7AR9C25", "6HE7JT34", "J9Y7BZ53", "4EY7U48J", "2J8XZ89K", "43TQ83RY", "DM5F52H4", "SN96K2Q2", "H4MD254T", "Z7DG5K58", "6USW9V85", "6B2WRG46", "3MVPW395", "9FR737NG", "5GQ3W6Y6", "8CPH6B43", "WK54N8R5", "48KSC5V7", "R33DB8Y6", "6DY5PM43", "K5J356MD", "E3HRF846", "NHX89W75", "E592KJ3W", "4YP66KA3", "J745P6SD", "Z4B4GX73", "K96D3S4H", "462ZDX5R", "D657RZ8F", "F227AXW3", "949MADQ8", "2E7Y73UZ", "FVG892D4", "7K8E36VP", "8C3R4H7X", "H847M4ZG", "35J73XWC", "2W5GN72J", "SV39R6Z4", "C73R65SJ", "99M28KQU", "3KM63AB4", "5AY4Z2F8", "498NW6AS", "CDX22H59", "V7G292FU", "Q757Z7KV", "N3V599EG", "TK4V6Q72", "6DS4G65H", "VA93FY67", "327X9FDE", "G645TM7Y", "P787YM7Z", "8A54Y2DP", "R644PD6H", "QX65M25U", "4WC258VF", "TU33Y76V", "5YJ24UZ7", "K8E6B2T9", "MQA595J7", "VU3MG253", "R7H6N7V4", "J83E5MT5", "JS258C3Q", "5X863PTM", "64QC8F5M", "4DXC42E2", "T9Z7DS74", "4HYR685Q", "4T66PZR6", "529AJ5WD", "P32D8W5R", "WB6G74F5", "X4G3C96S", "2CJT49N9", "FATN7426", "43SBK62N", "6E7KJ3V8", "96ZXY49F", "RDZ4E298", "S226QZ2F", "8M8Z3D2R", "GB2A3M39", "3TM95FD5", "Y232BG5H", "2XB3K66C", "82YC6PR2", "3R3ZMU25", "B5QPH654", "T5N7K69X", "Q98X44ZU", "72J8CP7V", "27W3P8DJ", "R23M4Z7J", "285QVEP4", "3UZ6R4Y8", "2R3QA2X4", "72P78DRY", "TC2R6Q49", "P2KF4N67", "TV336C3W", "V8MFZ868", "B8Y793CS", "MU5325TH", "89UHNA76", "449YH5XW", "E3D3V9M8", "6XEP772R", "3AQ797GP", "Z2W4Q39X", "M52CKF53", "564GKAR5", "66B2AJE7", "7G72MZB6", "WG5Z3U76", "3KF39A6Q", "8P6FE4K3", "B9R8J64D", "86KXWY57", "G855DR3X", "85M6KPC4", "E894YK5J", "N3C8U3S6", "5H68C8YR", "U22Z54BX", "M28S4PU4", "9SX9RF65", "XQ3FS497", "9DMB48T6", "5MWK65D2", "YP79B95E", "P645B9SU", "3B445GDF", "J27G88YT", "6X53HR7Y", "687EVBU5", "53QZ3J3U", "G4552RAD", "6XFBK834", "J4T8UX79", "465MBS9H", "998ZW7GQ", "4P8QN62M", "PV486NC8", "25R58PXQ", "4Y6FVM53", "RU49J9X4", "57E4X8NC", "JF94Q2T9", "3PX3U72Q", "P7B67U6K", "NJY38W96", "MWR7D444", "3J568UXY", "3V222XTC", "Z435NAM4", "RBE8D484", "3U38KHQ4", "575P6UVG", "DC65E97Q", "9V768WHP", "82B2FJQ8", "438X9QBT", "N42P2H2X", "29ZH69YR", "8AQE8H37", "FE462G9N", "N8HT2U38", "4S3FPG89", "534K5WGF", "H644FZ5J", "45UGAS47", "8W962GBQ", "P465U2CX", "V98UDT22", "586STZR2", "79DC3W9M", "829GKQ9X", "C5RP368F", "R9H83C4E", "58VHM6B5", "G45VB9N6", "6YU25G8Q", "75B2RG6P", "KVE492T7", "V857YGH4", "WQ749P9D", "S9WQ85T7", "5M58KUE9", "CK546E9F", "D69W3VX5", "YQC625R3", "K98V3NB6", "X5A7T7Y3", "WM6D578C", "DW2TS587", "53CA5H2N", "87F6US4K", "376V6APB", "644TXK2W", "3R7FQ46K", "93V35AGU", "T2Z2J8R9", "3E9PU2B4", "NS2ZU895", "8SY3H6G7", "HV4KX244", "849HQJ5B", "67BF4T3P", "Q7TS9Z69", "23GES7R2", "4RA7S2Z2", "GRP9T933", "SMD287U5", "H455F6TA", "C3FP3S63", "2KCR3D76", "U83H82MC", "3KUG36M9", "R473SG4E", "JY36MS47", "N56B3S8C", "QDZ6P727", "MU3V38D7", "WV33R9Q4", "9CB355DW", "Z3X265HC", "9F9PQD56", "4UV49PY3", "RS9XV745", "JK2V877X", "7TZ8QM97", "Y2Z6WC73", "HN84P9U7", "G5J35M5K", "94HMVW66", "X69Y3JP7", "N6JW6Y77", "Q45GU4B3", "ZME3B842", "A9R7Y7V6", "3N2TQ3E2", "M3U3S2R6", "SH5369UW", "6ZM27VH6", "9959PFXZ", "4VH897TE", "6TRM732X", "H5M963PD", "4M5F6H8R", "86QRP6W5", "477BZ8CM", "DT37J94Y", "X588D6FU", "S35PJ3M4", "E78Q78FA", "427RDC9T", "474BC2AW", "Z266HJ7N", "2T434NCY", "439DGE8H", "8Q5R29AH", "4V2M9D7S", "2AZU4R67", "E65HJ5U4", "75A9RB9W", "8R9KB83M", "RNG6466S", "24HN69GC", "96P9WD6N", "ZD269RU3", "2F4KU66D", "6QHS378J", "C4Y873SM", "938XPF8S", "7TK26A2G", "9V9B4W5J", "BST9R379", "44UM52XB", "7F4D96CZ", "2A5S94UN", "858RA8NW", "A42M9EC7", "68KXVW23", "QPW4863X", "69D4H4KQ", "643RSXB9", "32T9BK2N", "C4H44EF9", "92BYM22H", "7E9XZ8N8", "AR347QJ6", "3M25FVW5", "9BKW494G", "X4488HKJ", "64QD95FA", "2Y39JB2Z", "HE7542SG", "PXH3T662", "56JU92RW", "92MPWK93", "C7ZP65U2", "3436DSCZ", "4NAW729D", "QH5K3F62", "VT5G8N33", "VX4P368R", "X4E84QF3", "D7Z2CU44", "626S2VFG", "K9N3B9V3", "N6Y752DV", "Z4D5T94U", "82JYP5D4", "TRY2579V", "U7XA988H", "Y7B3KZ45", "72J3BF6Z", "VHC2795J", "2FPR689X", "4JM4T98E", "H5MK325E", "M54DH54X", "J99YM23Z", "89R3JME4", "GX29MT87", "36DA6GC3", "BMD65X53", "75SKWG63", "5FP647UC", "F69AX6V4", "KE4652WA", "6A548EKM", "49JBC6Z5", "25C6GU5V", "88Z25GSA", "7GJ7MB74", "QMG2Z348", "84N8U8TD", "NCP5524B", "UN89JW86", "UC3AD333", "6WMR5Q48", "8UBM68W3", "WME2F485", "AD835EG4", "N53M6FU3", "32N5K2CM", "7FK32P3D", "YZ75T79R", "75TJ43YX", "R92C74HY", "57NQAZ62", "78B3SZ7E", "97MG6HS7", "AT577HJ2", "77Q9CNM5", "C72Y4T8P"];
-const CODIGOS_MENSAL = ["2FB65Y3D", "Y2U32B5M", "Y58R2XK4", "ZDR76H76", "8XAQ8S87", "9ME3K8D6", "XRB526A6", "UZ99E38D", "BU469D8Q", "HE57YW26", "R44S3CA3", "U388G4VF", "F5C75K4R", "37A72KEQ", "93FCQD68", "2AN9EV97", "36Z5TS3N", "C76G8W3F", "T4G57P5U", "92QR67FZ", "NVE367Q6", "4TR7J25D", "V774KJ7A", "D98BYF48", "A6DS5R78", "54SBAH28", "N6CTE874", "CM99J64H", "3QUA3G27", "P584D6ZK", "2H5U9S6T", "7ANM7T79", "NP4S793W", "U9Z997MJ", "3J6DRN82", "JVP87G98", "M6393DWE", "5V79F4NX", "WU696ZJ8", "W54Z58QX", "44ERU96W", "GM3866XA", "U5E9G8D6", "4K4J58FM", "V947FDR6", "733VU7FJ", "9Q999HXG", "4Z3G84JS", "UA2EJ886", "VC3969DQ", "938FSUV5", "79GT8X4U", "Z93PG83T", "9NX5H53A", "AY4R979V", "685RF6SB", "VR354XM6", "2HS6RK98", "83SU2B4M", "87XB47AW", "66SGV73M", "7TQ95F9J", "UR6Z2B49", "57RDP3J9", "2N6V8FP5", "M399EYJ2", "B8E39R4U", "2NM64U7X", "34VMS9G2", "F446XHA4", "3F2HZ8R5", "4HU867AY", "8G928PFE", "86YZ4S3B", "JX38SA28", "4HC635SF", "ZF5A256E", "Z9BG84U3", "46JR8QP8", "675VP5BH", "4N95QWC5", "H2364EXS", "FG9Q4H66", "ZGQ963P2", "9EYBP826", "38Y78VAT", "R8Q9J94K", "H69SJN64", "4J3AVS67", "X88U89YD", "56BWK86S", "BH2T78S7", "87K8FC5T", "964KR8JF", "SGE4K565", "5E9SU3G2", "AD98U6K5", "PV49G45M", "52S9FTU9", "2T79P2CM", "594YFB5X", "KRGD6654", "43SV3U6Z", "QDE5349K", "GQJ7M234", "7FU78GJ2", "K5F376YC", "GY2VM367", "M8U4AH46", "FJ4RP899", "6DTUJ696", "7P65VSE5", "AU8Y269B", "U729NBS2", "34Q7DGW5", "V497RHD7", "ZRJ9H364", "6QA33TJ8", "8HZV23E6", "P8V879SA", "P49V4N7A", "CJ2939NP", "S67A73UM", "443N6BKE", "9SF69V7D", "V6Q5C7P4", "QA35H98F", "U2D4RY67", "4TUF44C7", "2DTJ75A9", "B73RU5Y6", "8H38CKU4", "8Z88TS3Y", "Q73AHW22", "99R98DAE", "P2845DZB", "997HQS2U", "JP5N893Q", "T28AM8C8", "87N4JC8W", "Y5M28GB8", "XW5Y8G89", "T68WQ8F3", "R367W8KD", "8H97S3PU", "U57AR5P6", "N259RQ3H", "DM2J832X", "SXUJ4573", "79F4QED4", "47K5N4CQ", "76CA32MB", "RN847T6H", "7MD64N3C", "2J92CVZ8", "8Y7C5V2H", "XA4E2S96", "54WG9TH5", "59AHM63B", "XA8H46B5", "P2D6C22V", "7A7EU6P7", "W7M3SG35", "ST4H7F86", "C6V74WN5", "49QGB3S7", "WRF5X378", "DW4V42K8", "H8Q48E5P", "4ZW2M67U", "W8F6PY93", "JKD3699B", "832WS4EU", "U5X6E54K", "K75VJ88U", "974ZYKQ9", "85B7X4EA", "93GD45HC", "25KQS75U", "43U9P9GC", "V869CS7E", "3699AMBP", "6B72E4XJ", "3F3C2Y2W", "5FBC7V96", "ZT4SU884", "K3E6V87J", "42R3P3JT", "82A74HEG", "QV55C6D5", "738EZQ5C", "W58ZK86P", "G98H4NJ9", "G38HBR22", "3M4D2PT3", "GNX32D27", "7N85KG8D", "9P4U88AQ", "TX663PE9", "83YH9RK6", "FVK234N2", "D67A6Q4B", "Z57A38SM", "699Y6VZA", "9X554SED", "ZM9F22C9", "33V7K3NH", "UZ7789CS", "4AW95SC5", "T8P778NV", "748THA5M", "73RUG6V2", "BWU97R53", "NH52E6C7", "BFN697Y4", "8J7VM6P9", "Y5Z83GD8", "NH87R9U3", "8H35RDB9", "QBP3852K", "R48PMW49", "4ZPS4N44", "4B7F39MN", "59DZS8A4", "37YR6DP5", "G2H455KM", "84J2C9EP", "4W7K2D6R", "54BG87TJ", "9X37TC5A", "KXBH9969", "R7H352YX", "AYG5883K", "JP99D7X5", "J3N782KW", "24WR75MH", "DX7A689H", "5S7ZF58M", "F86B55KZ", "33N6Z5UM", "K4D3V87P", "927D7VXQ", "WBT2225K", "S4DY9G67", "83UPA9Y7", "2AS3WQ69", "B9FE36W3", "E45G4ZP3", "E284VPS2", "VZB62W36", "ME367WS5", "S3H54ZG9", "N3J387SH", "4M5DF2Q2", "946F5MDK", "KJZE9327", "8R4K5DY2", "6R8G6HX7", "B6DH46S3", "NCA942X3", "9BM58YT6", "K5M492NT", "65YW9T4B", "EN37QK49", "E58FC35K", "HW25K6N7", "N2PD643R", "HU24R8Z6", "VE652Y2Q", "F7UT84M8", "ZG75C8F4", "8GT285QR", "H2Y8JT24", "37NV6C6G", "F84N6ER7", "9E8Q2D5U", "YT72PQ69", "8T7RU4K7", "V45K95EC", "2R9ZKJ76", "K28JTV24", "N7M967JE", "6ED39J7Q", "N33EP6R5", "32PHG6D4", "W32R7JC9", "8DX3M5P2", "FZ8XS934", "8H69GS8K", "C67M9D6F", "2TAJQ969", "M382JEA2", "9882FCVE", "4VN65JK6", "Z365M9PJ", "27DS34MA", "TB5S636Y", "TF938MH4", "VN7G242M", "5B9XA67G", "MF539RW7", "NF26VD72", "S27PN96K", "454GFWA5", "UP825YQ6", "2R354DTQ", "3TX5H2W5", "7UF42ZA8", "N774GUT3", "N4UE98X9", "AZ8YK365", "HZ8B67N9", "M56YD8B5", "Z492J6BH", "QRE99P28", "893BUK3H", "Q8H67UF6", "H76YNP29", "8KJA792T", "N8JD279X", "73Z8VX6R", "76SR6B4X", "7H8DPX86", "K36WE4V5", "455EC8AZ", "K24A49FH", "57ZKWX26", "T27Z4K7N", "5MZ44RX8", "77B82RSC", "EC5W629J", "PJ3T256S", "57SH4UG2", "V66J5R2S", "J567QXS2", "GY6J69U5", "2N43CV9S", "6S2B3F9Q", "9VX9G78P", "9T236XZE", "395DPBK8", "5D26XPC5", "T8K4M63N", "98XR6A7P", "3M6XYU77", "94F3XP4R", "8WP7R86Q", "46C8YV7A", "4ED7Q2M4", "3F6YB82A", "HV46CG89", "8XC6V64S", "D83X7S8A", "26TZ5AC5", "8QY4PS78", "DF79W74R", "N9577HAB", "67V9SUC4", "P94A3JB5", "74S9PE7K", "566AM5RH", "53CRQ57V", "DF9PN726", "7X8D8V6F", "32XSK62M", "E588PZ9Q", "W3M5YD58", "6N8K5E9Z", "97JY2F7Z", "3S5Q6MR7", "78GA6KY8", "5HJX584C", "H77FM85X", "BEK3W932", "ZW8GQ792", "S893GAY2", "794ZCF7N", "68MKE94R", "32DV84RG", "HV79R59S", "58QEYW99", "Y426UH4R", "TR3W8Q63", "6FE84G3W", "5UB3T47E", "9UE27R7K", "5CE9W8S9", "79N3FKS3", "AX2Y69J8", "Z2887XVG", "FC8G839J", "6VG963QT", "KS53DP57", "M2EP329D", "G6P239AZ", "V72J5R2S", "H52BTS58", "9H8A2PG2", "W37BE9Z8", "N6G73AS9", "N6U34T9G", "7R2NK47T", "F388BW6D", "Y2AD2Q94", "43J2D3US", "F4YR74X5", "67CKNM64", "824WN2DZ", "99A5QKT9", "W5ZQ2B32", "Y58CD87J", "3YVW6K84", "9D98EGX3", "CJ3332AF", "73X9PJ2D", "87F92MES", "69Z7Q5JV", "P2228TDN", "5N3A9FX3", "J89B4UW5", "6HSP83R5", "Y7H4W88Z", "V765J9AU", "6485VXDK", "X555ZSG4", "U2P9D3A4", "TMR9N258", "2X93NT7Y", "22GZ9HP9", "R72PWT24", "85KR8Q9S", "Y7923HBW", "QT39C45G", "88H38EMA", "6S489CUD", "6BCH67Y4", "D796X5NG", "8A87QX7N", "6FR72C9W", "ZY849NM7", "A9SZ8H34", "CN436J2B", "XY25J3H7", "4P775RAE", "RB976XE4", "66KA4X2M", "6C97ZU4K", "8BE39VM8", "6HP567BF", "759Z8DBE", "9S568BQN", "C8Z8A5U8", "8S46A6CY", "5C2MV7D4", "56UX5WS6", "J4REX662", "72A6J8RK", "P965TMS5", "5Q2VJ9E8", "AU54R42F", "M99U53BG", "88WFP8C3", "642MA2GY", "X4M424RN", "29PS8Q4N", "76HY4K3C", "NS6DT583", "2ZP8GQ63", "5BH7K47V", "4847TXEP", "435MT7AV", "99D2VZE8", "27FE2WH4", "23RCB44K", "G7BX82E4", "XH4944EY", "6A5Q6EW8", "9TJRW882", "4F52XN7J", "Z6C59M7D", "9X45JK3M", "42M89PUT", "NT52B26Y", "AU7E8X44", "8ZD6AS28", "4QEU53P3", "JKV3G672", "9Y4DUJ24", "VQ925PZ5", "6PM365BF", "BZ3RT696", "6F24R9MW", "56FTG5R3", "N6GX464V", "D95K2TN3", "2J399HTN", "J952RF4Y", "NG727W8Y", "C62U53GK", "3J9M56EC", "4H5CT7B5", "4P43TBV3", "7WEMF377", "V35RTA35", "T6399XEB", "A7N7E47R", "94KP8Z8V", "C29SF23W", "N5452KTJ", "7AJE985V", "4TD2Y22B", "9A85CKY2", "496VEQF6", "ZF8JR356", "7W3XM73G", "75RX85BV", "ZR93J79Y", "7RM52HJ2", "2T9D7F6W", "85QASE52", "36P82NQJ", "6AUF5C63", "M9GT657Z", "463Z2GVQ", "8DTZ88J7", "YQ5G2B68", "6KP8JF86", "E968VST4", "5C93B9JE", "S856VB9U", "56ET2C5N", "75FAJ85V", "6CZ3J78R", "JQ3324MS", "9G3Z6D2N", "4B2CK26W", "V66KZ84E", "54SR9A3G", "5KT4P73J", "E4GUK959", "T5YP9R59", "FC4PN584", "7X94CF7P", "2U58B8ZA", "J73G9AV4", "2H3BS3N3", "MH76K5F4", "A496VC3Z", "BX447WR7", "83MHY8K7", "B663GAD5", "AT45Y57B", "9XR8SD73", "XH953AF8", "R2EJ88K3", "DG6CT265", "4AN373XT", "9JP3D6R6", "24B59VMH", "5N3K3MD3", "HN3M5E97", "ZHCB2363", "4Y42CR9W", "54DR84UP", "K453MW4B", "C6979YEV", "BJW48Z29", "5HM8EN27", "4AQN366W", "RA39HC42", "Y959BGR8", "N5B7S9K2", "Q9M87TB3", "YZ822HF4", "4Z4VD7Y7", "9ES8N42C", "KZ554ES5", "DV9629CR", "6VCE96T7", "BD8S3P43", "923EF6PR", "KUH4325F", "D8K664MH", "NW22KP82", "59RCDF78", "5KY8U5G3", "A3K8C66N", "42DYTK92", "6KDN2S97", "YA6Z826C", "G66ERP69", "8Q9NWZ24", "G3Q36NS8", "4EMBD832", "3732TFUP", "23DAWY89", "344YENJ5", "24C8GV4Y", "3Q7F33RY", "N7H7GX79", "S6GY622P", "B4A2PD67", "553F2UBT", "JS3Q474C", "M2H667QX", "6STJK775", "2HQP396S", "265UZT6B", "2B97MC4Y", "49KUGX66", "N585VW6X", "3X96UYK4", "MP2746UT", "V5KGE499", "47A5B8DH", "JHC357W9", "92VQ7Y9P", "NUW69T42", "C4677PFZ", "M3E3C5B3", "Q8E537PN", "8858DYWA", "3VJXR423", "44R9BU6G", "NYC7W966", "83NW7VS9", "2MK3U7F3", "8XAC638Y", "6H973SYX", "73VA57EW", "5GDT2F76", "5J67BQ6V", "Y7V89TS6", "6Y972MPE", "2V292JZQ", "5D6P8UC8", "92P9TMG6", "95WQ62EX", "M2PX299C", "97SQ7AH2", "485ZQ5PB", "75Q57YWV", "349W7NSZ", "354DY5UF", "SEU8W372", "5N3XJE25", "4M5D7F5B", "JW34E76A", "4HQ56KE2", "3QW8D6C9", "BZ5N8S86", "X6VB569C", "P2S42Q8N", "3DA2SU54", "4QV523ZW", "2ZG58XB9", "55C77WYF", "7BA2KD48", "94K56RJW", "9J87M9BF", "8A3WU2V2", "2S5W9F3Z", "MSF5224K", "59R3UX2K", "S9KU9Y54", "NEH48F34", "G2597HAP", "W7H495BT", "BZ536FK7", "2SF4N2Y5", "6EQT69M8", "GU7S9E48", "Z8A5Y6U8", "2FW8PG43", "V6SZ6K22", "9YGPM884", "DTV4Q772", "38AJ79DN", "C958K8QN", "9M6J4U6G", "JN22X37R", "9J7GQ43Y", "C5Y9J82P", "9X76P8VJ", "ZA5J693Y", "784M8WAG", "MF643B3Z", "52EZH8V9", "U8G3BJ63", "5GU4P5W6", "845EQGF9", "9EAS8P77", "MR9D3H32", "PGU7Q223", "W5JG86Q8", "7GTZ6U94", "N9BY783T", "K8P5M3W6", "TM826G8F", "H5N6ER98", "A5Z52K5G", "AMB4R259", "7A87VSE7", "4NZ9TE43", "UZ3S97T3", "46Q9FKT3", "79KA5P3Z", "PDB95K59", "SZ8Q563A", "84X3DG7C", "F7N57W3Z", "5UG944CE", "BTG52K62", "BQ38D53H", "832MG5BX", "2Z3YDM62", "5ZXD932H", "D565T8BV", "ND894PE8", "Q7SG8B82", "W8U24CN3", "Z24V6U4G", "4P3EQ9D3", "AP9D886R", "WND738K9", "K3M975UC", "A5462DZN", "365HEMP3", "8RYN552F", "7XW856JE", "9DXAV576", "3TKC623X", "6EM6K63G", "3R84EN4B", "MBF66D63", "SM9Z39V7", "6BY25D7X", "65UWR8F7", "22X79MFJ", "8TF495YU", "288SNRM2", "34VQ99GR", "M679BAF2", "TZS27P29", "XK8A4H86", "5Z4RY2B3", "K88CHT39", "TX62M8C6", "BVC6379J", "5V2S2QB2", "8Y84ZQM9", "UD7Z4N35", "4M9DW74U", "6UTZ2V39", "7HQ5YB99", "E3X7S75Y", "GN7C6R74", "7X2K57FQ", "4F54S4VK", "P9S5K6E7", "8M85UNS8", "4QT27MV2", "4Q73U8TP", "983W2ZNS", "CT5P92E6", "63CY9MH3", "H58D6B4J", "FR7982PB", "HS5D933G", "J9E8S38Y", "AT3C553Q", "MU897K8J", "8P95XZW8", "D93M84WA", "9M4JHS28", "5P8ZE64C", "6AT2D59Q", "9SE75UJ2", "6S56UCD5", "8FRM52G2", "C484DUG9", "MT8CV669", "CHBY9389", "HUEX5582", "7QB45ZX9", "3MUN93Z2", "V5CW89J5", "6R3EN4S6", "9J3P7Q4B", "U42KD26G", "UX7B2V43", "JNM338Y9", "729YZRM8", "Y9WH868S", "YXW2539R", "E72X92NG", "7X7H2RE5", "495MTNA9", "HQ7DK539", "6YJ7RX46", "8582SQEK", "NV6959TG", "2JKQ923W", "P9V955WH", "2HK88WV7", "X5T73GS4", "98ZRS9Y8", "N5Y374DT", "25D8P7WT", "4J244DHU", "WM643FH8", "CD95YE53", "76AM4K3G", "M2ADV288", "MY7HJ523", "VYR4F232", "98U9JNM5", "TA32Z6K8", "93W8G8AT", "27DCZ42T", "87XH76VK", "X2BQP355", "74D6B2NF", "9EW93X7R", "3P94NGD6", "4T4V24QE", "5H3VQ7W8", "5J8PQT59", "8DKW94Z9", "94BM8N2R", "849JA8WY", "NY7336RB", "29P69CKB", "K8E4S2N3", "Y3TU8W85", "YXFD2799", "4Q8PD2G4", "BD68J27T", "9Q4A69PB", "6CWF8M34", "963HR7YU", "5H6W73JE", "543HPSN9", "A24D8S6Q", "X3Z6K4Q9", "QVG97E76", "K8G29JM8", "B8P8MX97", "84Q6A7WB", "828X3YGB", "QX445K5G", "DR29KQ75", "WU4V7H52", "G559MHU6", "7BDY33Q7", "X49C3VG2", "EJ2279HU", "MX384W4N", "Y6WRZ279", "EZ7A584N", "4TMW678Z", "P9QK626Y", "BD72M26H", "EU878V3T", "46DSB45W", "32N8TE7G", "3US69J3G", "4SA624QV", "D4A666MK", "4E86KS5Q", "4G9QY74V", "X77S8QW8", "2E9T8FZ4", "4G3M3CR6", "EJSR3899", "72CZ98VD", "9D6Y7ZN8", "T28M3S2G", "48KNG76V", "3KD9T53G", "W432S6ZF", "46F3E9HM", "AZU26G79", "756DYSK2", "DN752U5B", "89YU74AV", "4DU52K4Z", "348E4PAX", "JM5B8T48", "UJFC9545", "328SJK5E", "A74Y45DQ", "47YJUH79", "TM4593VN", "7Y93BCN5", "JY5F385P", "XNK4Q635", "GTZ2989U", "8M5B48ZT", "A8UD63M4", "A5MJP453", "9JP6YN88", "2GX6P34B", "8CTEP469", "Q3MZ69P7", "6S3CQ52W", "69T4GS2C", "EJY9467U", "G229QYN2", "5FZ34VH8", "3VDTA963", "86UZ3E2N", "S8F45JX9", "BWD34Y72", "86S63QTZ", "46NQ5X6G", "S69DX53R", "7A66GE5F", "K4667GDC", "X4Y94KF5", "64KNDP65", "3ZNP385J", "5V5WRG54", "SR8Q248M", "788RJ9SX", "5W89VE6F", "V764XH2Q", "2AE2YM88", "9PHQ96M6", "9XRTC786", "DU558K4V", "73BV94FK", "7WS4X5J6", "3UW2DE85", "4554YHRT", "8YS9D87U", "8H2BCZ28", "FE9T6R24", "JNS9292T", "ARX88S93", "RXQ8854G", "936ZEKN4", "35QU7V3B", "9372FCXJ", "WH784E7U", "VJT7H977", "6PN583RZ", "QK98P53B", "7637QBKS", "87TN44QD", "D7A8V3B2", "H55U4FD9", "Y832CWE7", "R2J2A8T8", "A777QTU9", "UB464E7G", "Z8M38EK9", "B8NS58V9", "5FZB3D56", "VB32J88Q", "D76N46EP", "5VPF82A5", "KC3478FS", "9D243YXB", "MJ578P3A", "F494K2ZG", "U7355PHM", "52EJNT97", "TEFR7735", "UT643JB7", "WX23FJ35", "UF25W49D", "9J7HP65G", "473VKNT5", "EG8VX478", "BQ68UZ37", "65HK96SF", "CYUV4873", "3TF858NX", "VJ59YD45", "7YMJ879C", "7FE92W8Y", "23S7AU7N", "2K8D95MZ", "2SW69A6R", "739U5WRH", "REZ84G53", "3ZF6U6H2", "GUA672V3", "B5DGP324", "V48S7NU6", "H4U5R34F", "W8E3H84P", "K345MB2U", "34ZH7U6J", "38SC47ZT", "H39D57PE", "4UTS882D", "46UQD8A8", "79UR2K4X", "B9832CKD", "BM8RA287", "6F736KQE", "T4J47C5R", "3C2Z2TJ4", "435RBTV6", "7Q4T6J3N", "6J4U62WM", "A98CF9W3", "4D5JV7B9", "T8W233YZ", "R3YT689F", "PS232UT5", "Q2M7RN39", "BW8ZH237", "N7R5X9J5", "S336Q5WN", "59M9R2JV", "H8Z57K3V", "CRZ62U37", "585UR7EY", "J939KZU5", "YVC3K764", "D3RJ635F", "C5T5YE55", "42D7J7US", "2W8A55SZ", "Q8C6F3K5", "7U35KD4N", "ZK78V56B", "9P554HGM", "A5G29N6D", "3JG3XV69", "P7W8Q2H6", "KQ9J366R", "33W88AYS", "T4S59V2U", "6KT9DG23", "6D8X33JF", "59QN8C5R", "8DVS2M23", "2NC4X7W8", "3G2XA96K", "Q322YWT6", "82X42WYP", "6PCW6N24", "H8JW42S9", "22EZG2J7", "XZ2662SN", "9QY8G3D6", "85Q9XN8G", "R98VG6W9", "U7W92YX8", "Z6CN782H", "9ZAR88N2", "W74Q5H6B", "3F89TCN6", "843FJZG6", "9Z733GDA", "Z26J69NM", "KWE42P97", "94J43KSU", "MVH342K2", "6H8MA5R4", "377EASJ9", "9A48Q9GX", "XVN7689P", "83KXGU69", "2365MSAB", "S5QE976C", "N6BR33Y6", "F3V59C4S", "3RDE996W", "7EQ6HN92", "QD52Z8W3", "DGRH2935", "3YH9F23Z", "K2NT66G4", "AZ73G7T2", "7CNJ692V", "63EHC5R6", "A889M7WJ", "58AG66SM", "RW38AN86", "GS8428BJ", "78QY7U6M", "R43J3MV5", "639DSY3M", "M8G76AE9", "7V9ST9Q8", "B5KQ856Y", "FE35XN52", "CDV7622S", "X4228VSH", "726P8GTJ", "7TZ8EA68", "96G7B2PD", "QW9V9N64", "2V7K36SU", "532K2QHX"];
-
-const TRINTA_MIN_MS = 30*60*1000;
-const TRINTA_DIAS_MS = 30*24*60*60*1000;
-
-function getAuth(){
-    try{ return JSON.parse(localStorage.getItem("authApp")); }catch(e){ return null; }
-}
-
-function salvarAuth(auth){
-    localStorage.setItem("authApp", JSON.stringify(auth));
-}
-
-function iniciarSessao(nome, codigo, tipo){
-    let agora = Date.now();
-    let validade = agora + (tipo==="teste" ? TRINTA_MIN_MS : TRINTA_DIAS_MS);
-    let auth = {nome: nome||"", codigo, tipo, inicio: agora, validade};
-    salvarAuth(auth);
-    return auth;
-}
-
-function tentarLogin(){
-    let nome = document.getElementById("loginNome").value.trim();
-    let codigo = document.getElementById("loginSenha").value.trim().toUpperCase();
-
-    if(!nome){
-        alert("Digite seu nome.");
-        return;
-    }
-    if(!codigo){
-        alert("Digite a senha de acesso.");
-        return;
-    }
-
-    if(CODIGOS_TESTE.includes(codigo)){
-        iniciarSessao(nome, codigo, "teste");
-        verificarAcesso();
-    } else if(CODIGOS_MENSAL.includes(codigo)){
-        iniciarSessao(nome, codigo, "mensal");
-        verificarAcesso();
-    } else {
-        alert("Senha inválida. Verifique e tente novamente.");
-    }
-}
-
-function tentarRenovar(){
-    let codigo = document.getElementById("renovarSenha").value.trim().toUpperCase();
-    if(!codigo){
-        alert("Digite a senha mensal.");
-        return;
-    }
-    let auth = getAuth();
-    if(CODIGOS_MENSAL.includes(codigo)){
-        iniciarSessao(auth ? auth.nome : "", codigo, "mensal");
-        verificarAcesso();
-    } else if(CODIGOS_TESTE.includes(codigo)){
-        alert("Essa é uma senha de teste (30 min) e o período de teste já foi usado. Para continuar, é necessário uma senha mensal.");
-    } else {
-        alert("Senha inválida.");
-    }
-}
-
-function sairApp(){
-    if(confirm("Deseja sair? Você precisará digitar a senha novamente para voltar a usar o app.")){
-        localStorage.removeItem("authApp");
-        verificarAcesso();
-    }
-}
-
-function tempoRestanteTexto(auth){
-    let ms = auth.validade - Date.now();
-    if(ms<=0) return "Expirado";
-    if(auth.tipo==="teste"){
-        let min = Math.ceil(ms/60000);
-        return "Teste grátis · " + min + " min restante(s)";
-    } else {
-        let dias = Math.ceil(ms/(24*60*60*1000));
-        return "Plano mensal · " + dias + " dia(s) restante(s)";
-    }
-}
-
-/* ===== Dados do veículo ===== */
-
-let veiculoEditandoDoCPMA = false;
-
-function getVeiculo(){
-    try{ return JSON.parse(localStorage.getItem("veiculo")); }catch(e){ return null; }
-}
-
-function salvarVeiculo(){
-    let marca = document.getElementById("veiculoMarca").value.trim();
-    let modelo = document.getElementById("veiculoModelo").value.trim();
-
-    if(!marca || !modelo){
-        alert("Preencha ao menos a marca e o modelo do veículo.");
-        return;
-    }
-
-    let veiculo = {
-        marca,
-        modelo,
-        ano: document.getElementById("veiculoAno").value.trim(),
-        placa: document.getElementById("veiculoPlaca").value.trim().toUpperCase(),
-        cor: document.getElementById("veiculoCor").value.trim()
-    };
-
-    localStorage.setItem("veiculo", JSON.stringify(veiculo));
-
-    if(veiculoEditandoDoCPMA){
-        veiculoEditandoDoCPMA = false;
-        document.getElementById("telaVeiculo").style.display = "none";
-        document.getElementById("telaCPMA").style.display = "block";
-        atualizarInfoVeiculoCPMA();
-    } else {
-        verificarAcesso();
-    }
-}
-
-function abrirEdicaoVeiculo(){
-    let veiculo = getVeiculo() || {};
-    document.getElementById("veiculoMarca").value = veiculo.marca || "";
-    document.getElementById("veiculoModelo").value = veiculo.modelo || "";
-    document.getElementById("veiculoAno").value = veiculo.ano || "";
-    document.getElementById("veiculoPlaca").value = veiculo.placa || "";
-    document.getElementById("veiculoCor").value = veiculo.cor || "";
-
-    veiculoEditandoDoCPMA = true;
-    document.getElementById("telaCPMA").style.display = "none";
-    document.getElementById("telaVeiculo").style.display = "block";
-}
-
-function atualizarInfoVeiculoCPMA(){
-    let el = document.getElementById("cpmaInfoVeiculo");
-    if(!el) return;
-    let veiculo = getVeiculo();
-
-    if(!veiculo){
-        el.innerHTML = `<button class="linkSair" style="margin:0" onclick="abrirEdicaoVeiculo()">🚗 Cadastrar veículo</button>`;
-        return;
-    }
-
-    let texto = "🚗 " + veiculo.marca + " " + veiculo.modelo;
-    if(veiculo.ano) texto += " · " + veiculo.ano;
-    if(veiculo.placa) texto += " · " + veiculo.placa;
-
-    el.innerHTML = texto + ` <button class="linkSair" style="display:inline;margin:0 0 0 4px" onclick="abrirEdicaoVeiculo()">✏️</button>`;
-}
-
-function verificarAcesso(){
-    let auth = getAuth();
-    let telaLogin = document.getElementById("telaLogin");
-    let telaExpirado = document.getElementById("telaExpirado");
-    let telaVeiculo = document.getElementById("telaVeiculo");
-    let appContainer = document.getElementById("appContainer");
-    let infoSessao = document.getElementById("infoSessao");
-
-    if(!auth){
-        telaLogin.style.display = "block";
-        telaExpirado.style.display = "none";
-        telaVeiculo.style.display = "none";
-        appContainer.style.display = "none";
-        return;
-    }
-
-    if(Date.now() >= auth.validade){
-        telaLogin.style.display = "none";
-        telaExpirado.style.display = "block";
-        telaVeiculo.style.display = "none";
-        appContainer.style.display = "none";
-        return;
-    }
-
-    if(!getVeiculo()){
-        telaLogin.style.display = "none";
-        telaExpirado.style.display = "none";
-        telaVeiculo.style.display = "block";
-        appContainer.style.display = "none";
-        return;
-    }
-
-    telaLogin.style.display = "none";
-    telaExpirado.style.display = "none";
-    telaVeiculo.style.display = "none";
-    appContainer.style.display = "block";
-    if(infoSessao){
-        infoSessao.innerText = (auth.nome ? auth.nome + " · " : "") + tempoRestanteTexto(auth);
-    }
-}
-
-iniciarPix();
-setInterval(verificarAcesso, 15000);
-verificarAcesso();
+    let abaSalva = localStorage.getItem("abaAtiva") || "ganhos";
+    mudarAba(abaSalva);
+});
 </script>
 </body>
 </html>
+ 
