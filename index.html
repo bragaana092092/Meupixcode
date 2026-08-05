@@ -1,0 +1,3023 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Controle de Corridas</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box;font-family:Arial}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding:15px;transition:.3s;width:100%;overflow-x:hidden}
+body.dark{background:#121212;color:#fff}
+body.light{background:#f2f2f2;color:#111}
+.container{max-width:430px;margin:auto}
+
+.card{
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:15px;
+    background:rgba(255,255,255,.08);
+    box-shadow:0 4px 14px rgba(0,0,0,.25)
+}
+
+input, select{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    font-size:18px;
+    margin-bottom:12px;
+    font-family:Arial;
+    color:#111
+}
+
+button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:14px;
+    font-size:17px;
+    cursor:pointer
+}
+
+button:disabled{
+    opacity:.5;
+    cursor:not-allowed
+}
+
+.primary{background:#1976d2;color:white}
+.toggle{background:#444;color:white}
+
+.metaBtn{
+    background:#00c853;
+    color:white;
+    margin-bottom:12px;
+}
+
+/* ===== Botões redondos (tema / meta por hora) ===== */
+.iconBtnRow{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.roundBtn{
+    width:52px;
+    height:52px;
+    flex:none;
+    padding:0;
+    border-radius:50%;
+    background:#444;
+    color:#fff;
+    font-size:20px;
+    line-height:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.roundBtn.metaRound{
+    background:#00c853;
+}
+
+.roundBtn .metaValorBadge{
+    font-size:9px;
+    font-weight:bold;
+    margin-top:2px;
+    line-height:1;
+}
+
+.hourBlock{
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:20px;
+    background:rgba(255,255,255,.08)
+}
+
+.hourTitle{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.hourTotal{
+    font-size:34px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.status{
+    font-size:24px;
+    font-weight:bold;
+    margin:10px 0 15px 0;
+}
+
+.ride{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px;
+    border-radius:14px;
+    margin-bottom:10px;
+    background:rgba(255,255,255,.08);
+}
+
+.actions{
+    display:flex;
+    gap:5px;
+}
+
+.actions button{
+    width:auto;
+    padding:8px 10px;
+}
+
+/* ===== Topo / Atualizar ===== */
+.topBar{
+    margin-bottom:15px;
+}
+
+#btnAtualizar{
+    background:#333;
+    color:#fff;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+}
+
+/* ===== Abas ===== */
+.tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:15px;
+}
+
+.tabBtn{
+    flex:1;
+    padding:13px;
+    border:none;
+    border-radius:14px;
+    background:rgba(255,255,255,.08);
+    color:inherit;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    opacity:.6;
+}
+
+.tabBtn.active{
+    opacity:1;
+    background:#1976d2;
+    color:#fff;
+}
+
+.tabContent{
+    display:none;
+}
+
+.tabContent.active{
+    display:block;
+}
+
+/* ===== Pix: cabeçalho e chaves ===== */
+.pixTitulo{
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    margin:0 0 15px 0;
+}
+
+.btn-gerar, .btn-recebido{
+    background:#2d6cdf;
+    color:white;
+}
+
+.btn-voltar{
+    background:#222;
+    color:white;
+}
+
+.chaveItem{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px;
+    border-radius:14px;
+    margin-bottom:10px;
+    background:rgba(255,255,255,.08);
+}
+
+.chaveInfo{
+    overflow:hidden;
+    padding-right:8px;
+}
+
+.chaveNome{
+    font-weight:bold;
+    font-size:15px;
+}
+
+.chaveValor{
+    font-size:13px;
+    opacity:.75;
+    word-break:break-all;
+    font-family:monospace;
+    margin-top:2px;
+}
+
+.chaveActions{
+    display:flex;
+    gap:6px;
+    flex-shrink:0;
+}
+
+.chaveActions button{
+    width:auto;
+    padding:8px 10px;
+}
+
+.semChaves{
+    text-align:center;
+    opacity:.7;
+    padding:10px 0;
+    font-size:14px;
+}
+
+.pausaItem{
+    padding:4px 0;
+    opacity:.9;
+}
+
+.despesaCategorias{
+    display:flex;
+    gap:6px;
+    margin-bottom:10px;
+}
+
+.despesaCatBtn{
+    flex:1;
+    padding:10px 4px;
+    border:none;
+    border-radius:12px;
+    background:rgba(255,255,255,.08);
+    color:inherit;
+    font-size:12px;
+    cursor:pointer;
+}
+
+.despesaCatBtn.active{
+    background:#c62828;
+    color:#fff;
+}
+
+.despesaItem{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 12px;
+    border-radius:12px;
+    margin-bottom:8px;
+    background:rgba(255,255,255,.06);
+    font-size:14px;
+}
+
+.btn-limpar-hoje{
+    width:100%;
+    background:#c62828;
+    color:#fff;
+}
+
+.formChave{
+    display:none;
+    margin-top:5px;
+}
+
+.formChave.visivel{
+    display:block;
+}
+
+.btn-chaves{
+    background:#333;
+    color:#fff;
+    margin-bottom:15px;
+}
+
+.chavesModalCard{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:90%;
+    max-width:400px;
+    max-height:82vh;
+    overflow-y:auto;
+    background:#242424;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 -8px 30px rgba(0,0,0,.45);
+    color:#fff;
+}
+
+.chavesModalHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.btn-fechar-chaves{
+    width:auto;
+    padding:6px 12px;
+    background:#333;
+    color:#fff;
+}
+
+.btn-voltar-pix{
+    background:#222;
+    color:#fff;
+    margin-bottom:10px;
+}
+
+.btn-add-chave{
+    background:#00c853;
+    color:#fff;
+}
+
+.formChaveBotoes{
+    display:flex;
+    gap:8px;
+}
+
+.formChaveBotoes button{
+    flex:1;
+}
+
+.btn-salvar-chave{
+    background:#00c853;
+    color:#fff;
+}
+
+.btn-cancelar-chave{
+    background:#444;
+    color:#fff;
+}
+
+.campoValidacao{
+    font-size:13px;
+    min-height:16px;
+    margin:-6px 0 10px 4px;
+}
+
+.modalErro{
+    font-size:13px;
+    color:#ff5252;
+    min-height:16px;
+    margin:-4px 0 10px 4px;
+}
+
+/* ===== Meta Diária ===== */
+.metaDiariaWrap{
+    margin-top:14px;
+    cursor:pointer;
+}
+
+.metaDiariaInfo{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:13px;
+    margin-bottom:6px;
+    opacity:.9;
+}
+
+.metaDiariaInfo b{
+    font-size:14px;
+}
+
+.metaDiariaBarraFundo{
+    width:100%;
+    height:10px;
+    border-radius:6px;
+    background:rgba(255,255,255,.12);
+    overflow:hidden;
+}
+
+.metaDiariaBarraPreenchida{
+    height:100%;
+    background:#ff9800;
+    width:0%;
+    transition:width .3s ease;
+}
+
+/* ===== Rodapé fixo de navegação ===== */
+body{padding-bottom:74px;}
+
+.bottomNav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    display:flex;
+    z-index:50;
+    background:#1a1a1a;
+    border-top:1px solid rgba(255,255,255,.08);
+    box-shadow:0 -2px 10px rgba(0,0,0,.3);
+}
+
+body.light .bottomNav{
+    background:#fff;
+    border-top:1px solid rgba(0,0,0,.08);
+}
+
+.bottomNavBtn{
+    flex:1;
+    background:none;
+    border:none;
+    color:inherit;
+    opacity:.55;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    padding:9px 0 7px;
+    font-size:11px;
+    cursor:pointer;
+}
+
+.bottomNavBtn .icone{
+    font-size:20px;
+}
+
+.bottomNavBtn.active{
+    opacity:1;
+    color:#2d6cdf;
+}
+
+/* ===== Aba Métricas ===== */
+.metricasTipoSeletor{
+    display:flex;
+    gap:8px;
+    margin-bottom:12px;
+}
+
+.metricasTipoBtn{
+    flex:1;
+    border:1px solid rgba(255,255,255,.15);
+    background:none;
+    color:inherit;
+    padding:9px 0;
+    border-radius:12px;
+    font-size:13px;
+    font-weight:bold;
+    opacity:.55;
+    cursor:pointer;
+}
+
+body.light .metricasTipoBtn{
+    border:1px solid rgba(0,0,0,.15);
+}
+
+.metricasTipoBtn.active{
+    opacity:1;
+    border-color:#2d6cdf;
+    background:rgba(45,108,223,.15);
+    color:#2d6cdf;
+}
+
+.metricasSeletor{
+    display:flex;
+    background:rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:4px;
+    margin-bottom:16px;
+}
+
+body.light .metricasSeletor{
+    background:rgba(0,0,0,.06);
+}
+
+.metricasSeletorBtn{
+    flex:1;
+    border:none;
+    background:none;
+    color:inherit;
+    padding:10px 0;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:bold;
+    opacity:.6;
+    cursor:pointer;
+}
+
+.metricasSeletorBtn.active{
+    background:rgba(255,255,255,.15);
+    opacity:1;
+}
+
+body.light .metricasSeletorBtn.active{
+    background:#fff;
+}
+
+.metricasTotal{
+    text-align:center;
+    font-size:40px;
+    font-weight:bold;
+    margin:6px 0 4px;
+}
+
+.metricasSubtitulo{
+    text-align:center;
+    font-size:13px;
+    opacity:.65;
+    margin-bottom:18px;
+}
+
+.metricasGraficoWrap{
+    overflow-x:auto;
+    padding-bottom:4px;
+}
+
+.metricasBarraContainer{
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    min-height:150px;
+    padding:0 4px;
+}
+
+.metricasBarraItem{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:44px;
+}
+
+.metricasBarraItem.clicavel{
+    cursor:pointer;
+}
+
+.metricasBarraItem.clicavel:active{
+    opacity:.65;
+}
+
+.metricasBarraItem.clicavel .metricasBarra{
+    box-shadow:0 0 0 2px rgba(255,255,255,.15) inset;
+}
+
+.metricasBarraValor{
+    font-size:11px;
+    margin-bottom:5px;
+    white-space:nowrap;
+    opacity:.9;
+}
+
+.metricasBarra{
+    width:30px;
+    min-height:3px;
+    background:#8b7bf0;
+    border-radius:6px 6px 3px 3px;
+    transition:height .3s ease;
+}
+
+.metricasBarraLabel{
+    font-size:11px;
+    margin-top:6px;
+    opacity:.7;
+    white-space:nowrap;
+}
+
+.metricasPainel{
+    display:flex;
+    justify-content:space-around;
+    margin-top:8px;
+}
+
+.metricasPainelItem{
+    text-align:center;
+}
+
+.metricasPainelValor{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.metricasPainelLabel{
+    font-size:12px;
+    opacity:.65;
+    margin-top:2px;
+}
+
+.metricasVazio{
+    text-align:center;
+    opacity:.6;
+    padding:30px 10px;
+    font-size:14px;
+}
+
+/* QR */
+#qrArea{
+    display:none;
+    text-align:center;
+}
+
+.qrRow{
+    margin-top:20px;
+}
+
+#qrcode{
+    background:white;
+    padding:16px;
+    border-radius:16px;
+    width:100%;
+    max-width:400px;
+    margin:0 auto;
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+#qrcode canvas, #qrcode img{
+    width:100% !important;
+    height:auto !important;
+    display:block;
+}
+
+.linhaRecebido{
+    display:flex;
+    gap:10px;
+    margin-top:22px;
+}
+
+.linhaRecebido .btn-recebido{
+    flex:1;
+    margin-top:0;
+}
+
+.btn-copiar-pix{
+    width:52px;
+    height:52px;
+    flex:none;
+    padding:0;
+    border-radius:50%;
+    background:#555;
+    color:#fff;
+    font-size:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* Overlay */
+.overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:rgba(0,0,0,0.82);
+    display:none;
+    z-index:999;
+}
+
+.confirmacao-centro{
+    position:absolute;
+    top:36%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    text-align:center;
+    width:100%;
+}
+
+.check{
+    font-size:92px;
+    color:#00d47a;
+    line-height:1;
+}
+
+.msg{
+    margin-top:8px;
+    font-size:25px;
+    font-weight:bold;
+    color:#fff;
+}
+
+/* Avaliação estilo app */
+.avaliacao-card{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#242424;
+    border-radius:26px 26px 0 0;
+    padding:28px 24px 26px;
+    text-align:center;
+    box-shadow:0 -8px 30px rgba(0,0,0,0.45);
+    color:#fff;
+}
+
+.avaliacao-titulo{
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:22px;
+}
+
+.estrelas{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:0 auto 28px;
+    max-width:360px;
+}
+
+.star{
+    font-size:58px;
+    color:#5a5a5a;
+    cursor:pointer;
+    line-height:1;
+    transition:color 0.15s, transform 0.15s;
+}
+
+.star.active{
+    color:gold;
+    transform:scale(1.06);
+}
+
+.avaliacao-info{
+    border-top:1px solid #333;
+    padding-top:22px;
+    color:#bdbdbd;
+    font-size:16px;
+    margin-bottom:18px;
+}
+
+.overlay .btn-voltar{
+    background:#111;
+    color:white;
+    max-width:420px;
+    margin:0 auto;
+    display:block;
+}
+
+/* Botao raio (taxa +20%) */
+.linha-valor{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:12px;
+}
+
+.linha-valor input{
+    margin-bottom:0;
+    flex:1;
+}
+
+.btn-raio{
+    width:52px;
+    height:52px;
+    min-width:52px;
+    padding:0;
+    border-radius:14px;
+    background:#2a2a2a;
+    color:#888;
+    font-size:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #3a3a3a;
+    cursor:pointer;
+    transition:all 0.15s;
+}
+
+.btn-raio.ativo{
+    background:#3a2f00;
+    color:gold;
+    border-color:gold;
+}
+
+.info-taxa{
+    text-align:center;
+    font-size:13px;
+    opacity:.8;
+    margin:-6px 0 12px 0;
+    display:none;
+}
+
+.info-taxa.visivel{
+    display:block;
+}
+
+.rodape{
+    text-align:center;
+    margin-top:22px;
+}
+
+.btn-resetar{
+    width:auto;
+    padding:6px 14px;
+    margin-top:0;
+    background:none;
+    border:1px solid #666;
+    color:inherit;
+    opacity:.6;
+    font-size:12px;
+    font-weight:normal;
+    border-radius:20px;
+    cursor:pointer;
+}
+
+.btn-resetar:active{
+    opacity:.9;
+}
+
+/* ===== Responsivo para telas pequenas ===== */
+@media (max-width:360px){
+    body{padding:10px}
+    .card, .hourBlock{padding:14px}
+    .hourTotal{font-size:28px}
+    input, select, button{font-size:15px}
+    .tabBtn{font-size:13px;padding:11px}
+    .star{font-size:46px}
+    .bottomNavBtn{font-size:9px;padding:7px 0 5px}
+}
+
+body.compact .card, body.compact .hourBlock{
+    padding:13px;
+}
+
+body.compact .hourTotal{
+    font-size:27px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+    <div class="topBar" id="topBar">
+        <button id="btnAtualizar" onclick="atualizarApp()" title="Limpa o cache do app e recarrega">🔄 Atualizar</button>
+    </div>
+
+    <!-- ===================== ABA GANHOS ===================== -->
+    <div id="tabGanhos" class="tabContent active">
+
+        <div class="iconBtnRow">
+            <button class="roundBtn" id="btnTema" onclick="toggleTheme()" title="Alternar tema">🌙</button>
+            <button class="roundBtn metaRound" id="btnMetaHora" onclick="abrirMetaHoraModal()" title="Meta por hora">
+                <span>🎯</span>
+                <span class="metaValorBadge">R$<span id="metaAtual">30</span></span>
+            </button>
+        </div>
+
+        <div class="card" style="text-align:center;position:relative">
+            <button onclick="resetarPonto()" title="Resetar horário" style="position:absolute;top:10px;right:10px;width:auto;padding:6px 9px;font-size:14px;background:rgba(255,255,255,.15);color:inherit;border-radius:10px">↺</button>
+            <div><b>💰 Total de hoje</b></div><div id="totalGeral" style="font-size:28px">R$ 0,00</div>
+
+            <div class="metaDiariaWrap" onclick="abrirModalMetaDiaria()" title="Toque para editar a meta diária">
+                <div class="metaDiariaInfo">
+                    <span>🎯 Meta diária: <b>R$ <span id="metaDiariaValor">200</span></b></span>
+                    <span id="metaDiariaStatus">Faltam R$ 200,00</span>
+                </div>
+                <div class="metaDiariaBarraFundo">
+                    <div class="metaDiariaBarraPreenchida" id="metaDiariaBarra"></div>
+                </div>
+            </div>
+
+            <div id="pontoStatus" style="margin-top:10px;font-size:14px;opacity:.85;line-height:1.6"></div>
+            <div id="pontoPausas" style="margin-top:8px;font-size:13px;opacity:.8;text-align:left"></div>
+            <div id="pontoBotoes" style="margin-top:10px"></div>
+        </div>
+
+        <div class="card">
+            <input id="valorCorrida" type="number" step="0.01" placeholder="Valor da corrida">
+            <div style="display:flex;gap:8px">
+                <button class="primary" style="flex:1" onclick="adicionarCorrida()">Adicionar Corrida</button>
+                <button id="reportBtn" onclick="baixarRelatorio()" style="width:56px;background:#1565c0;color:#fff" title="Baixar relatório do dia">📄</button>
+                <button id="despesaBtn" onclick="abrirDespesaModal()" style="width:56px;background:#c62828;color:#fff" title="Registrar despesa">💸</button>
+            </div>
+        </div>
+
+        <div id="listaHoras"></div>
+    </div>
+
+    <!-- ===================== ABA PIX ===================== -->
+    <div id="tabPix" class="tabContent">
+
+        <div class="pixTitulo">💠 Cobrar via Pix</div>
+
+        <button class="btn-chaves" onclick="abrirChavesModal()">🔑 Chaves</button>
+
+        <!-- FORM de geração -->
+        <div id="formArea" class="card">
+
+            <select id="chaveSelect"></select>
+
+            <div class="linha-valor">
+                <input type="number" id="valor" placeholder="Valor (opcional)" oninput="atualizarInfoTaxa()">
+                <button type="button" class="btn-raio" id="btnRaio" onclick="toggleTaxa()" title="Aplicar taxa de 20%">⚡</button>
+            </div>
+
+            <div class="info-taxa" id="infoTaxa"></div>
+
+            <button class="btn-gerar" id="btnGerar" onclick="gerarPix()">Gerar QR Code</button>
+        </div>
+
+        <!-- QR -->
+        <div id="qrArea">
+            <div class="qrRow">
+                <div id="qrcode"></div>
+            </div>
+
+            <div class="linhaRecebido">
+                <button class="btn-recebido" onclick="confirmar()">Pagamento recebido</button>
+                <button class="btn-copiar-pix" id="btnCopiarPix" onclick="copiarCodigoPix()" title="Copiar código Pix">📋</button>
+            </div>
+            <button class="btn-voltar" onclick="voltar()">Voltar</button>
+        </div>
+
+        <div class="rodape">
+            <button class="btn-voltar-pix" id="btnVoltarPix" onclick="mudarAba('ganhos')">⬅ Voltar</button>
+            <button class="btn-resetar" onclick="resetar()">Resetar</button>
+        </div>
+    </div>
+
+    <!-- ===================== ABA MÉTRICAS ===================== -->
+    <div id="tabMetricas" class="tabContent">
+
+        <div class="metricasTipoSeletor">
+            <button class="metricasTipoBtn active" id="metricasTipoGanhos" onclick="mudarTipoMetricas('ganhos')">💰 Ganhos</button>
+            <button class="metricasTipoBtn" id="metricasTipoCorridas" onclick="mudarTipoMetricas('corridas')">🔢 Corridas</button>
+        </div>
+
+        <div class="metricasSeletor">
+            <button class="metricasSeletorBtn active" id="metricasBtnHora" onclick="mudarModoMetricas('hora')">Hora</button>
+            <button class="metricasSeletorBtn" id="metricasBtnDia" onclick="mudarModoMetricas('dia')">Dia</button>
+            <button class="metricasSeletorBtn" id="metricasBtnSemana" onclick="mudarModoMetricas('semana')">Semana</button>
+            <button class="metricasSeletorBtn" id="metricasBtnMes" onclick="mudarModoMetricas('mes')">Mês</button>
+        </div>
+
+        <div class="card">
+            <div class="metricasTotal" id="metricasTotal">R$ 0,00</div>
+            <div class="metricasSubtitulo" id="metricasSubtitulo">Hoje</div>
+
+            <div class="metricasGraficoWrap">
+                <div class="metricasBarraContainer" id="metricasGrafico"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="font-weight:bold;margin-bottom:10px">💵 Resumo financeiro do período</div>
+            <div class="metricasPainel">
+                <div class="metricasPainelItem">
+                    <div class="metricasPainelValor" id="metricasBruto">R$ 0,00</div>
+                    <div class="metricasPainelLabel">Ganho bruto</div>
+                </div>
+                <div class="metricasPainelItem">
+                    <div class="metricasPainelValor" id="metricasDespesas" style="color:#ff5252">R$ 0,00</div>
+                    <div class="metricasPainelLabel">Despesas</div>
+                </div>
+                <div class="metricasPainelItem">
+                    <div class="metricasPainelValor" id="metricasLiquido" style="color:#00c853">R$ 0,00</div>
+                    <div class="metricasPainelLabel">Ganho líquido</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="metricasPainel">
+                <div class="metricasPainelItem">
+                    <div class="metricasPainelValor" id="metricasMedia">R$ 0,00</div>
+                    <div class="metricasPainelLabel">Média por corrida</div>
+                </div>
+                <div class="metricasPainelItem">
+                    <div class="metricasPainelValor" id="metricasQtd">0</div>
+                    <div class="metricasPainelLabel">Corridas no período</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- RODAPÉ FIXO -->
+<div class="bottomNav">
+    <button class="bottomNavBtn active" id="navBtnGanhos" onclick="mudarAba('ganhos')">
+        <span class="icone">🚗</span><span>Ganhos</span>
+    </button>
+    <button class="bottomNavBtn" id="navBtnPix" onclick="mudarAba('pix')">
+        <span class="icone">💠</span><span>Pix</span>
+    </button>
+    <button class="bottomNavBtn" id="navBtnMetricas" onclick="mudarAba('metricas')">
+        <span class="icone">📊</span><span>Métricas</span>
+    </button>
+    <button class="bottomNavBtn" id="navBtnOpcoes" onclick="abrirOpcoesModal()">
+        <span class="icone">⚙️</span><span>Opções</span>
+    </button>
+</div>
+
+<!-- MODAL: Gerenciar Chaves Pix -->
+<div class="overlay" id="chavesOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">🔑 Minhas Chaves Pix</div>
+            <button class="btn-fechar-chaves" onclick="fecharChavesModal()">✕</button>
+        </div>
+
+        <div id="listaChaves"></div>
+
+        <button class="btn-add-chave" onclick="abrirFormChave(null)">+ Adicionar chave</button>
+
+        <div class="formChave" id="formChave">
+            <input type="text" id="inputNomeChave" placeholder="Nome da chave (ex: PagSeguro)">
+            <select id="inputTipoChave" onchange="atualizarPlaceholderChave(); validarCampoChave()">
+                <option value="cpf">CPF</option>
+                <option value="cnpj">CNPJ</option>
+                <option value="email">E-mail</option>
+                <option value="telefone">Telefone</option>
+                <option value="aleatoria">Chave aleatória</option>
+            </select>
+            <input type="text" id="inputValorChave" placeholder="Digite a chave Pix" oninput="validarCampoChave()">
+            <div class="campoValidacao" id="validacaoChave"></div>
+            <div class="formChaveBotoes">
+                <button class="btn-salvar-chave" onclick="salvarFormChave()">Salvar</button>
+                <button class="btn-cancelar-chave" onclick="cancelarFormChave()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Meta por hora -->
+<div class="overlay" id="metaHoraOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">🎯 Meta por hora</div>
+            <button class="btn-fechar-chaves" onclick="fecharMetaHoraModal()">✕</button>
+        </div>
+
+        <div id="listaMetasHora"></div>
+
+        <button class="btn-add-chave" onclick="abrirFormMetaHora(null)">+ Nova meta</button>
+
+        <div class="formChave" id="formMetaHora">
+            <input type="number" step="1" id="inputValorMetaHora" placeholder="Valor da meta (R$/h)">
+            <div class="modalErro" id="erroMetaHora"></div>
+            <div class="formChaveBotoes">
+                <button class="btn-salvar-chave" id="btnSalvarMetaHora" onclick="salvarFormMetaHora()">Salvar</button>
+                <button class="btn-cancelar-chave" onclick="cancelarFormMetaHora()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Meta diária -->
+<div class="overlay" id="metaDiariaOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">🎯 Meta diária</div>
+            <button class="btn-fechar-chaves" onclick="fecharModal('metaDiariaOverlay')">✕</button>
+        </div>
+        <input type="number" step="1" id="inputMetaDiaria" placeholder="Valor da meta (R$)">
+        <div class="modalErro" id="erroMetaDiaria"></div>
+        <div class="formChaveBotoes">
+            <button class="btn-salvar-chave" onclick="confirmarMetaDiaria()">Salvar</button>
+            <button class="btn-cancelar-chave" onclick="fecharModal('metaDiariaOverlay')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: KM inicial -->
+<div class="overlay" id="kmInicialOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">▶ Iniciar turno</div>
+            <button class="btn-fechar-chaves" onclick="fecharModal('kmInicialOverlay')">✕</button>
+        </div>
+        <input type="number" step="0.1" id="inputKmInicial" placeholder="KM inicial (opcional)">
+        <div class="modalErro" id="erroKmInicial"></div>
+        <div class="formChaveBotoes">
+            <button class="btn-salvar-chave" onclick="confirmarIniciarTrabalho()">Iniciar</button>
+            <button class="btn-cancelar-chave" onclick="fecharModal('kmInicialOverlay')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: KM final -->
+<div class="overlay" id="kmFinalOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">⏹ Encerrar turno</div>
+            <button class="btn-fechar-chaves" onclick="fecharModal('kmFinalOverlay')">✕</button>
+        </div>
+        <input type="number" step="0.1" id="inputKmFinal" placeholder="KM final (opcional)">
+        <div class="modalErro" id="erroKmFinal"></div>
+        <div class="formChaveBotoes">
+            <button class="btn-salvar-chave" onclick="confirmarEncerrarTrabalho()">Encerrar</button>
+            <button class="btn-cancelar-chave" onclick="fecharModal('kmFinalOverlay')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Detalhe de um dia (histórico em Métricas) -->
+<div class="overlay" id="detalheDiaOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px" id="detalheDiaTitulo">📅 Dia</div>
+            <button class="btn-fechar-chaves" onclick="fecharModal('detalheDiaOverlay')">✕</button>
+        </div>
+        <div id="detalheDiaTotal" style="opacity:.8;margin-bottom:12px;font-size:14px"></div>
+        <div id="listaDetalheDia"></div>
+        <button class="btn-cancelar-chave" style="margin-top:10px;width:100%" onclick="fecharModal('detalheDiaOverlay')">Fechar</button>
+    </div>
+</div>
+
+<!-- MODAL: Editar corrida -->
+<div class="overlay" id="editarCorridaOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">✏️ Editar corrida</div>
+            <button class="btn-fechar-chaves" onclick="fecharModal('editarCorridaOverlay')">✕</button>
+        </div>
+        <input type="number" step="0.01" id="inputEditarCorrida" placeholder="Valor da corrida">
+        <input type="time" id="inputEditarCorridaHora" style="margin-top:8px">
+        <div class="modalErro" id="erroEditarCorrida"></div>
+        <div class="formChaveBotoes">
+            <button class="btn-salvar-chave" onclick="confirmarEditarCorrida()">Salvar</button>
+            <button class="btn-cancelar-chave" onclick="fecharModal('editarCorridaOverlay')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Opções -->
+<div class="overlay" id="opcoesOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">⚙️ Opções</div>
+            <button class="btn-fechar-chaves" onclick="fecharModal('opcoesOverlay')">✕</button>
+        </div>
+        <button class="btn-limpar-hoje" onclick="limparCorridasHoje()">🗑️ Limpar corridas de hoje</button>
+        <button class="btn-cancelar-chave" style="margin-top:10px;width:100%" onclick="fecharModal('opcoesOverlay')">Fechar</button>
+    </div>
+</div>
+
+<!-- MODAL: Despesas -->
+<div class="overlay" id="despesaOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">💸 Despesas</div>
+            <button class="btn-fechar-chaves" onclick="fecharDespesaModal()">✕</button>
+        </div>
+
+        <div class="despesaCategorias">
+            <button class="despesaCatBtn active" id="despCatAlimentacao" onclick="selecionarCategoriaDespesa('alimentacao')">🍔 Alimentação</button>
+            <button class="despesaCatBtn" id="despCatCombustivel" onclick="selecionarCategoriaDespesa('combustivel')">⛽ Combustível</button>
+            <button class="despesaCatBtn" id="despCatOutras" onclick="selecionarCategoriaDespesa('outras')">📝 Outras</button>
+        </div>
+
+        <input type="text" id="inputDescricaoDespesa" placeholder="Descreva a despesa (ex: remédio)" style="display:none">
+        <input type="number" step="0.01" id="inputValorDespesa" placeholder="Valor (R$)">
+        <div class="modalErro" id="erroDespesa"></div>
+
+        <div class="formChaveBotoes">
+            <button class="btn-salvar-chave" onclick="salvarDespesa()">Salvar</button>
+            <button class="btn-cancelar-chave" onclick="fecharDespesaModal()">Fechar</button>
+        </div>
+
+        <div id="listaDespesasHoje" style="margin-top:16px"></div>
+    </div>
+</div>
+
+<!-- MODAL: Resumo do turno -->
+<div class="overlay" id="resumoTurnoOverlay">
+    <div class="chavesModalCard">
+        <div class="chavesModalHeader">
+            <div style="font-weight:bold;font-size:18px">📊 Resumo do turno</div>
+            <button class="btn-fechar-chaves" onclick="fecharModal('resumoTurnoOverlay')">✕</button>
+        </div>
+        <div id="resumoTurnoConteudo" style="line-height:1.9;font-size:15px"></div>
+        <button class="btn-salvar-chave" style="margin-top:15px" onclick="fecharModal('resumoTurnoOverlay')">Fechar</button>
+    </div>
+</div>
+
+<!-- OVERLAY (confirmação de pagamento Pix) -->
+<div class="overlay" id="overlay">
+    <div class="confirmacao-centro">
+        <div class="check">✔</div>
+        <div class="msg">Pagamento recebido</div>
+    </div>
+
+    <div class="avaliacao-card">
+        <div class="avaliacao-titulo">Como foi sua corrida?</div>
+
+        <div class="estrelas">
+            <span class="star" onclick="avaliar(1)">★</span>
+            <span class="star" onclick="avaliar(2)">★</span>
+            <span class="star" onclick="avaliar(3)">★</span>
+            <span class="star" onclick="avaliar(4)">★</span>
+            <span class="star" onclick="avaliar(5)">★</span>
+        </div>
+
+        <div class="avaliacao-info">Seu feedback pode ajudar a melhorar suas corridas</div>
+
+        <button class="btn-voltar" onclick="voltarConfirmacao()">Voltar</button>
+    </div>
+</div>
+
+<script>
+/* ======================================================================
+   UTILITÁRIOS DE PERSISTÊNCIA (localStorage seguro)
+   ====================================================================== */
+function lsGetRaw(chave, valorPadrao){
+    try{
+        let raw = localStorage.getItem(chave);
+        if(raw===null || raw===undefined) return valorPadrao;
+        return raw;
+    }catch(e){
+        console.warn("Erro ao ler localStorage:", chave, e);
+        return valorPadrao;
+    }
+}
+
+function lsGetJSON(chave, valorPadrao){
+    try{
+        let raw = localStorage.getItem(chave);
+        if(raw===null || raw===undefined) return valorPadrao;
+        let parsed = JSON.parse(raw);
+        return (parsed===null || parsed===undefined) ? valorPadrao : parsed;
+    }catch(e){
+        console.warn("Dado inválido no localStorage, usando padrão:", chave, e);
+        return valorPadrao;
+    }
+}
+
+function lsGetNumero(chave, valorPadrao){
+    try{
+        let raw = localStorage.getItem(chave);
+        if(raw===null || raw===undefined || raw==="") return valorPadrao;
+        let n = parseFloat(raw);
+        return isNaN(n) ? valorPadrao : n;
+    }catch(e){
+        console.warn("Erro ao ler número do localStorage:", chave, e);
+        return valorPadrao;
+    }
+}
+
+function lsSet(chave, valor){
+    try{
+        localStorage.setItem(chave, typeof valor==="string" ? valor : JSON.stringify(valor));
+        return true;
+    }catch(e){
+        console.warn("Erro ao salvar no localStorage:", chave, e);
+        return false;
+    }
+}
+
+function escapeHtml(texto){
+    if(texto===null || texto===undefined) return "";
+    return String(texto)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#39;");
+}
+
+function removerAcentos(texto){
+    return String(texto||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+function numeroValido(v){
+    return typeof v==="number" && isFinite(v) && !isNaN(v);
+}
+
+/* Retorna true se duas datas caem no mesmo dia do calendário (fuso local) */
+function mesmoDia(d1, d2){
+    let a = new Date(d1), b = new Date(d2);
+    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+}
+
+/* Valida e normaliza uma corrida vinda do localStorage */
+function corridaValida(c){
+    return c && typeof c==="object" && numeroValido(c.valor) && c.valor>0 && typeof c.timestamp==="string" && !isNaN(new Date(c.timestamp).getTime());
+}
+
+/* ======================================================================
+   ABAS
+   ====================================================================== */
+function mudarAba(aba){
+    document.getElementById("tabGanhos").classList.toggle("active", aba==="ganhos");
+    document.getElementById("tabPix").classList.toggle("active", aba==="pix");
+    document.getElementById("tabMetricas").classList.toggle("active", aba==="metricas");
+
+    document.getElementById("navBtnGanhos").classList.toggle("active", aba==="ganhos");
+    document.getElementById("navBtnPix").classList.toggle("active", aba==="pix");
+    document.getElementById("navBtnMetricas").classList.toggle("active", aba==="metricas");
+
+    document.getElementById("topBar").style.display = (aba==="pix" || aba==="metricas") ? "none" : "block";
+
+    lsSet("abaAtiva", aba);
+
+    if(aba==="metricas") renderizarMetricas();
+}
+
+/* ======================================================================
+   ATUALIZAR APP (limpa cache do navegador, preserva dados salvos)
+   ====================================================================== */
+async function atualizarApp(){
+    let btn = document.getElementById("btnAtualizar");
+    btn.innerHTML = "⏳ Atualizando...";
+    btn.disabled = true;
+
+    try{
+        if("caches" in window){
+            let nomes = await caches.keys();
+            await Promise.all(nomes.map(n=>caches.delete(n)));
+        }
+        if("serviceWorker" in navigator){
+            let regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r=>r.unregister()));
+        }
+    }catch(e){
+        console.warn("Erro ao limpar cache:", e);
+    }
+
+    let url = new URL(window.location.href);
+    url.searchParams.set("_r", Date.now());
+    window.location.href = url.toString();
+}
+
+/* ======================================================================
+   RESPONSIVIDADE - reconhece a tela do usuário
+   ====================================================================== */
+function ajustarTela(){
+    document.body.classList.toggle("compact", window.innerWidth < 360);
+}
+window.addEventListener("resize", ajustarTela);
+
+/* ======================================================================
+   MODAIS GENÉRICOS
+   ====================================================================== */
+function abrirModal(id){
+    document.getElementById(id).style.display = "block";
+}
+
+function fecharModal(id){
+    document.getElementById(id).style.display = "none";
+}
+
+/* ======================================================================
+   GANHOS POR HORA / CONTROLE DE CORRIDAS
+   ====================================================================== */
+let META = lsGetNumero("metaHora", 30);
+if(META<=0) META = 30;
+let metaDiaria = lsGetNumero("metaDiariaValor", 200);
+if(metaDiaria<=0) metaDiaria = 200;
+
+let corridas = lsGetJSON("corridas", []);
+if(!Array.isArray(corridas)) corridas = [];
+corridas = corridas.filter(corridaValida);
+
+function salvar(){
+    lsSet("corridas", corridas);
+}
+
+function corridasDoDia(data){
+    return corridas.filter(c=>mesmoDia(c.timestamp, data));
+}
+
+function totalDoDia(data){
+    return corridasDoDia(data).reduce((a,c)=>a+c.valor,0);
+}
+
+function abrirModalMetaDiaria(){
+    document.getElementById("inputMetaDiaria").value = metaDiaria;
+    document.getElementById("erroMetaDiaria").innerText = "";
+    abrirModal("metaDiariaOverlay");
+}
+
+function confirmarMetaDiaria(){
+    let v = parseFloat(document.getElementById("inputMetaDiaria").value);
+    let erro = document.getElementById("erroMetaDiaria");
+
+    if(isNaN(v) || v<=0){
+        erro.innerText = "Digite um valor válido maior que zero";
+        return;
+    }
+
+    metaDiaria = v;
+    lsSet("metaDiariaValor", v);
+    fecharModal("metaDiariaOverlay");
+    atualizarMetaDiariaUI();
+}
+
+function atualizarMetaDiariaUI(){
+    let valorEl = document.getElementById("metaDiariaValor");
+    let barra = document.getElementById("metaDiariaBarra");
+    let status = document.getElementById("metaDiariaStatus");
+    if(!valorEl || !barra || !status) return;
+
+    valorEl.innerText = metaDiaria.toFixed(2);
+
+    let total = totalDoDia(new Date());
+    let pct = metaDiaria>0 ? Math.min(100, (total/metaDiaria)*100) : 0;
+
+    barra.style.width = pct + "%";
+
+    if(total>=metaDiaria){
+        status.innerText = "✅ Meta batida!";
+        barra.style.background = "#00c853";
+    } else {
+        status.innerText = `Faltam R$ ${(metaDiaria-total).toFixed(2)}`;
+        barra.style.background = "#ff9800";
+    }
+}
+
+function chaveHora(timestamp){
+    let d = new Date(timestamp);
+    let ano = d.getFullYear();
+    let mes = String(d.getMonth()+1).padStart(2,"0");
+    let dia = String(d.getDate()).padStart(2,"0");
+    let hora = String(d.getHours()).padStart(2,"0");
+    return `${ano}-${mes}-${dia}-${hora}`;
+}
+
+function renderizar(){
+    let container = document.getElementById("listaHoras");
+    container.innerHTML="";
+    document.getElementById("totalGeral").innerText="R$ "+totalDoDia(new Date()).toFixed(2);
+    atualizarMetaDiariaUI();
+
+    let grupos = {};
+
+    corridas.forEach((corrida,index)=>{
+        if(!mesmoDia(corrida.timestamp, new Date())) return;
+        let chave = chaveHora(corrida.timestamp);
+        if(!grupos[chave]) grupos[chave]=[];
+        grupos[chave].push({...corrida,index});
+    });
+
+    let chavesHoraOrdenadas = Object.keys(grupos).sort().reverse();
+
+    chavesHoraOrdenadas.forEach(chave=>{
+        let lista = grupos[chave];
+        let data = new Date(lista[0].timestamp);
+        let hora = data.getHours().toString().padStart(2,"0");
+        let total = lista.reduce((s,c)=>s+c.valor,0);
+
+        let bloco = document.createElement("div");
+        bloco.className = "hourBlock";
+
+        let statusHTML = "";
+        if(total>=META){
+            statusHTML=`<div class="status" style="color:#00c853">✅ Meta batida!</div>`;
+        } else {
+            statusHTML=`<div class="status" style="color:#ff9800">Faltam R$ ${(META-total).toFixed(2)}</div>`;
+        }
+
+        bloco.innerHTML = `
+            <div class="hourTitle">Hora ${hora}:00 - ${hora}:59</div>
+            <div class="hourTotal">R$ ${total.toFixed(2)}</div>
+            ${statusHTML}
+        `;
+
+        lista.forEach(corrida=>{
+            let div = document.createElement("div");
+            div.className = "ride";
+
+            let horaMin = new Date(corrida.timestamp).toLocaleTimeString([],{
+                hour:'2-digit',
+                minute:'2-digit'
+            });
+
+            div.innerHTML = `
+                <div>${horaMin} → R$ ${corrida.valor.toFixed(2)}</div>
+                <div class="actions">
+                    <button onclick="editarCorrida(${corrida.index})">✏️</button>
+                    <button onclick="excluirCorrida(${corrida.index})">🗑️</button>
+                </div>
+            `;
+
+            bloco.appendChild(div);
+        });
+
+        container.appendChild(bloco);
+    });
+
+    criarHoraAtualSeNecessario();
+    atualizarDetalheDiaSeAberto();
+}
+
+function criarHoraAtualSeNecessario(){
+    let agora = new Date();
+    let chaveAtual = chaveHora(agora.toISOString());
+    let existe = corridas.some(c=>chaveHora(c.timestamp)===chaveAtual);
+
+    if(!existe){
+        let container = document.getElementById("listaHoras");
+        let hora = agora.getHours().toString().padStart(2,"0");
+
+        let bloco = document.createElement("div");
+        bloco.className = "hourBlock";
+        bloco.innerHTML = `
+            <div class="hourTitle">Hora ${hora}:00 - ${hora}:59</div>
+            <div class="hourTotal">R$ 0.00</div>
+            <div class="status" style="color:#ff9800">Faltam R$ ${(numeroValido(META)?META:0).toFixed(2)}</div>
+        `;
+        container.prepend(bloco);
+    }
+}
+
+let ultimoAdicionarTimestamp = 0;
+
+function adicionarCorrida(){
+    let input = document.getElementById("valorCorrida");
+    let botao = document.querySelector('button[onclick="adicionarCorrida()"]');
+    let valor = parseFloat(input.value);
+
+    if(isNaN(valor) || valor<=0){
+        alert("Digite um valor válido para a corrida");
+        return;
+    }
+
+    if(valor>999999){
+        alert("Valor da corrida parece muito alto. Confira antes de salvar.");
+        return;
+    }
+
+    let agora = Date.now();
+    if(agora - ultimoAdicionarTimestamp < 800){
+        return; // evita duplo clique / duplicidade acidental
+    }
+
+    let ultimaCorrida = corridas[0];
+    if(ultimaCorrida && ultimaCorrida.valor===valor && (agora - new Date(ultimaCorrida.timestamp).getTime())<3000){
+        if(!confirm("Você já adicionou uma corrida de mesmo valor há poucos segundos. Adicionar mesmo assim?")){
+            return;
+        }
+    }
+
+    ultimoAdicionarTimestamp = agora;
+    if(botao) botao.disabled = true;
+
+    try{
+        corridas.unshift({
+            valor,
+            timestamp: new Date().toISOString()
+        });
+
+        input.value = "";
+        salvar();
+        renderizar();
+    }catch(e){
+        console.error("Erro ao adicionar corrida:", e);
+        alert("Não foi possível salvar a corrida. Tente novamente.");
+    }finally{
+        if(botao) setTimeout(()=>{ botao.disabled = false; }, 400);
+    }
+}
+
+let editandoCorridaIndex = null;
+
+function editarCorrida(index){
+    if(!corridas[index]){
+        alert("Corrida não encontrada. A lista pode ter sido atualizada.");
+        renderizar();
+        return;
+    }
+    editandoCorridaIndex = index;
+    document.getElementById("inputEditarCorrida").value = corridas[index].valor;
+
+    let d = new Date(corridas[index].timestamp);
+    let hh = String(d.getHours()).padStart(2,"0");
+    let mm = String(d.getMinutes()).padStart(2,"0");
+    document.getElementById("inputEditarCorridaHora").value = `${hh}:${mm}`;
+
+    document.getElementById("erroEditarCorrida").innerText = "";
+    abrirModal("editarCorridaOverlay");
+}
+
+function confirmarEditarCorrida(){
+    let erro = document.getElementById("erroEditarCorrida");
+
+    if(editandoCorridaIndex===null || !corridas[editandoCorridaIndex]){
+        erro.innerText = "Corrida não encontrada. Feche e tente novamente.";
+        return;
+    }
+
+    let novo = parseFloat(document.getElementById("inputEditarCorrida").value);
+
+    if(isNaN(novo) || novo<=0){
+        erro.innerText = "Digite um valor válido maior que zero";
+        return;
+    }
+    if(novo>999999){
+        erro.innerText = "Valor muito alto. Confira o valor digitado.";
+        return;
+    }
+
+    let horaTexto = document.getElementById("inputEditarCorridaHora").value;
+    let novoTimestamp = corridas[editandoCorridaIndex].timestamp;
+
+    if(horaTexto){
+        let partes = horaTexto.split(":");
+        let hh = parseInt(partes[0],10);
+        let mm = parseInt(partes[1],10);
+        if(isNaN(hh) || isNaN(mm) || hh<0 || hh>23 || mm<0 || mm>59){
+            erro.innerText = "Horário inválido";
+            return;
+        }
+        let d = new Date(corridas[editandoCorridaIndex].timestamp);
+        d.setHours(hh, mm, 0, 0);
+        novoTimestamp = d.toISOString();
+    }
+
+    try{
+        corridas[editandoCorridaIndex].valor = novo;
+        corridas[editandoCorridaIndex].timestamp = novoTimestamp;
+        salvar();
+        renderizar();
+        fecharModal("editarCorridaOverlay");
+        editandoCorridaIndex = null;
+    }catch(e){
+        console.error("Erro ao editar corrida:", e);
+        erro.innerText = "Erro ao salvar. Tente novamente.";
+    }
+}
+
+function excluirCorrida(index){
+    if(!corridas[index]) return;
+    if(!confirm("Excluir esta corrida?")) return;
+    corridas.splice(index,1);
+    salvar();
+    renderizar();
+}
+
+function abrirOpcoesModal(){
+    abrirModal("opcoesOverlay");
+}
+
+/* ===== Detalhe de um dia específico (histórico via Métricas) ===== */
+let diaDetalheAtual = null;
+
+function abrirDetalheDia(dataRef){
+    if(!dataRef) return;
+    diaDetalheAtual = new Date(dataRef);
+    renderizarDetalheDia();
+    abrirModal("detalheDiaOverlay");
+}
+
+function renderizarDetalheDia(){
+    if(!diaDetalheAtual) return;
+
+    let tituloEl = document.getElementById("detalheDiaTitulo");
+    let totalEl = document.getElementById("detalheDiaTotal");
+    let lista = document.getElementById("listaDetalheDia");
+    if(!tituloEl || !totalEl || !lista) return;
+
+    tituloEl.innerText = "📅 " + diaDetalheAtual.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+
+    let itens = corridas
+        .map((c,i)=>({...c,index:i}))
+        .filter(c=>mesmoDia(c.timestamp, diaDetalheAtual))
+        .sort((a,b)=> new Date(a.timestamp) - new Date(b.timestamp));
+
+    let total = itens.reduce((a,c)=>a+c.valor,0);
+    totalEl.innerText = itens.length===0
+        ? "Nenhuma corrida registrada"
+        : `Total: R$ ${total.toFixed(2)} · ${itens.length} corrida${itens.length===1?"":"s"}`;
+
+    if(itens.length===0){
+        lista.innerHTML = `<div class="semChaves">Nenhuma corrida nesse dia</div>`;
+        return;
+    }
+
+    lista.innerHTML = "";
+    itens.forEach(c=>{
+        let horaMin = new Date(c.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        let div = document.createElement("div");
+        div.className = "chaveItem";
+        div.innerHTML = `
+            <div class="chaveInfo">
+                <div class="chaveNome">R$ ${c.valor.toFixed(2)}</div>
+                <div class="chaveValor">${horaMin}</div>
+            </div>
+            <div class="chaveActions">
+                <button onclick="editarCorrida(${c.index})" title="Editar">✏️</button>
+                <button onclick="excluirCorrida(${c.index})" title="Excluir">🗑️</button>
+            </div>
+        `;
+        lista.appendChild(div);
+    });
+}
+
+function atualizarDetalheDiaSeAberto(){
+    let overlay = document.getElementById("detalheDiaOverlay");
+    if(overlay && overlay.style.display==="block" && diaDetalheAtual){
+        renderizarDetalheDia();
+    }
+}
+
+function limparCorridasHoje(){
+    let hoje = new Date();
+    let restantes = corridas.filter(c=>!mesmoDia(c.timestamp, hoje));
+    let removidas = corridas.length - restantes.length;
+
+    if(removidas===0){
+        alert("Não há corridas registradas hoje.");
+        return;
+    }
+
+    if(!confirm(`Tem certeza que deseja apagar ${removidas} corrida(s) de hoje? Essa ação não pode ser desfeita.`)) return;
+
+    try{
+        corridas = restantes;
+        salvar();
+        renderizar();
+        fecharModal("opcoesOverlay");
+    }catch(e){
+        console.error("Erro ao limpar corridas de hoje:", e);
+        alert("Não foi possível limpar as corridas. Tente novamente.");
+    }
+}
+
+function toggleTheme(){
+    let body = document.body;
+    let tema = body.classList.contains("dark") ? "light" : "dark";
+    body.className = tema;
+    ajustarTela();
+    lsSet("tema", tema);
+    atualizarIconeTema();
+}
+
+function atualizarIconeTema(){
+    let btn = document.getElementById("btnTema");
+    if(btn) btn.innerText = document.body.classList.contains("dark") ? "☀️" : "🌙";
+}
+
+function carregarTema(){
+    let tema = lsGetRaw("tema", "dark");
+    if(tema!=="dark" && tema!=="light") tema = "dark";
+    document.body.className = tema;
+    atualizarIconeTema();
+}
+
+/* ===== Meta por hora (lista de metas salvas) ===== */
+let metasHoraLista = lsGetJSON("metasHoraLista", [30,40,50]);
+if(!Array.isArray(metasHoraLista)) metasHoraLista = [30,40,50];
+metasHoraLista = metasHoraLista.filter(v=>numeroValido(v) && v>0);
+if(metasHoraLista.length===0) metasHoraLista = [30,40,50];
+
+let editandoMetaHoraIndex = null;
+
+function salvarMetasHoraLista(){
+    lsSet("metasHoraLista", metasHoraLista);
+}
+
+function renderizarMetasHora(){
+    let lista = document.getElementById("listaMetasHora");
+    if(!lista) return;
+
+    if(metasHoraLista.length===0){
+        lista.innerHTML = `<div class="semChaves">Nenhuma meta cadastrada</div>`;
+        return;
+    }
+
+    lista.innerHTML = "";
+    metasHoraLista.forEach((valor,i)=>{
+        let ativa = valor===META;
+        let div = document.createElement("div");
+        div.className = "chaveItem";
+        if(ativa) div.style.background = "rgba(0,200,83,.18)";
+        div.innerHTML = `
+            <div class="chaveInfo">
+                <div class="chaveNome">R$ ${valor}/h ${ativa ? "✅" : ""}</div>
+            </div>
+            <div class="chaveActions">
+                <button onclick="usarMetaHora(${valor})" title="Usar esta meta">▶️</button>
+                <button onclick="abrirFormMetaHora(${i})" title="Editar">✏️</button>
+                <button onclick="excluirMetaHora(${i})" title="Excluir">🗑️</button>
+            </div>
+        `;
+        lista.appendChild(div);
+    });
+}
+
+function abrirMetaHoraModal(){
+    renderizarMetasHora();
+    abrirModal("metaHoraOverlay");
+}
+
+function fecharMetaHoraModal(){
+    fecharModal("metaHoraOverlay");
+    cancelarFormMetaHora();
+}
+
+function usarMetaHora(valor){
+    if(!numeroValido(valor) || valor<=0) return;
+    META = valor;
+    lsSet("metaHora", valor);
+    document.getElementById("metaAtual").innerText = valor;
+    renderizar();
+    fecharMetaHoraModal();
+}
+
+function abrirFormMetaHora(index){
+    editandoMetaHoraIndex = index;
+    let form = document.getElementById("formMetaHora");
+    let input = document.getElementById("inputValorMetaHora");
+
+    input.value = (index!==null && metasHoraLista[index]!==undefined) ? metasHoraLista[index] : "";
+
+    document.getElementById("erroMetaHora").innerText = "";
+    document.getElementById("btnSalvarMetaHora").innerText = index!==null ? "Salvar" : "Adicionar";
+    form.classList.add("visivel");
+}
+
+function salvarFormMetaHora(){
+    let erro = document.getElementById("erroMetaHora");
+    let v = parseFloat(document.getElementById("inputValorMetaHora").value);
+
+    if(!numeroValido(v) || v<=0){
+        erro.innerText = "Digite um valor válido maior que zero";
+        return;
+    }
+
+    let duplicada = metasHoraLista.some((valor,i)=> valor===v && i!==editandoMetaHoraIndex);
+    if(duplicada){
+        erro.innerText = "Essa meta já está cadastrada";
+        return;
+    }
+
+    let eraAtiva = editandoMetaHoraIndex!==null && metasHoraLista[editandoMetaHoraIndex]===META;
+
+    if(editandoMetaHoraIndex!==null && metasHoraLista[editandoMetaHoraIndex]!==undefined){
+        metasHoraLista[editandoMetaHoraIndex] = v;
+    } else {
+        metasHoraLista.push(v);
+    }
+
+    metasHoraLista.sort((a,b)=>a-b);
+    salvarMetasHoraLista();
+
+    if(eraAtiva){
+        META = v;
+        lsSet("metaHora", v);
+        document.getElementById("metaAtual").innerText = v;
+        renderizar();
+    }
+
+    cancelarFormMetaHora();
+    renderizarMetasHora();
+}
+
+function cancelarFormMetaHora(){
+    editandoMetaHoraIndex = null;
+    let form = document.getElementById("formMetaHora");
+    if(form) form.classList.remove("visivel");
+    let input = document.getElementById("inputValorMetaHora");
+    if(input) input.value = "";
+    let erro = document.getElementById("erroMetaHora");
+    if(erro) erro.innerText = "";
+}
+
+function excluirMetaHora(index){
+    if(metasHoraLista[index]===undefined) return;
+    if(metasHoraLista.length<=1){
+        alert("Mantenha pelo menos uma meta salva.");
+        return;
+    }
+    if(!confirm("Excluir esta meta por hora?")) return;
+
+    if(editandoMetaHoraIndex===index) cancelarFormMetaHora();
+    metasHoraLista.splice(index,1);
+    salvarMetasHoraLista();
+    renderizarMetasHora();
+}
+
+function carregarMeta(){
+    document.getElementById("metaAtual").innerText = META;
+}
+
+/* ===== Controle de Ponto ===== */
+function pontoValido(p){
+    return p && typeof p==="object" &&
+        ["parado","trabalhando","pausado"].includes(p.estado) &&
+        Array.isArray(p.intervalos);
+}
+
+let ponto = lsGetJSON("ponto", null);
+if(!pontoValido(ponto)){
+    ponto = {estado:"parado", inicio:null, intervalos:[], fim:null, kmInicial:null, kmFinal:null};
+}
+
+function salvarPonto(){
+    lsSet("ponto", ponto);
+}
+
+function formatarHora(ts){
+    return new Date(ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function formatarDuracao(ms){
+    if(ms<0) ms=0;
+    let totalMin = Math.floor(ms/60000);
+    let h = Math.floor(totalMin/60);
+    let m = totalMin%60;
+    return `${h}h ${m}min`;
+}
+
+/* Retorna {totalMs, pausaMs, efetivoMs} usando exclusivamente o registro de ponto */
+function calcularTemposPonto(pontoRef){
+    pontoRef = pontoRef || ponto;
+    if(!pontoRef || !pontoRef.inicio) return {totalMs:0, pausaMs:0, efetivoMs:0};
+
+    let inicio = new Date(pontoRef.inicio);
+    let fim = pontoRef.fim ? new Date(pontoRef.fim) : new Date();
+    if(isNaN(inicio.getTime())) return {totalMs:0, pausaMs:0, efetivoMs:0};
+
+    let totalMs = Math.max(0, fim - inicio);
+    let pausaMs = 0;
+
+    (pontoRef.intervalos||[]).forEach(iv=>{
+        if(!iv || !iv.inicio) return;
+        let ivInicio = new Date(iv.inicio);
+        let ivFim = iv.fim ? new Date(iv.fim) : new Date();
+        if(isNaN(ivInicio.getTime())) return;
+        pausaMs += Math.max(0, ivFim - ivInicio);
+    });
+
+    let efetivoMs = Math.max(0, totalMs - pausaMs);
+    return {totalMs, pausaMs, efetivoMs};
+}
+
+function calcularTotalTrabalhado(){
+    return calcularTemposPonto(ponto).efetivoMs;
+}
+
+let pontoTimerId = null;
+
+function agendarAtualizacaoPontoUI(){
+    if(pontoTimerId){
+        clearInterval(pontoTimerId);
+        pontoTimerId = null;
+    }
+    if(ponto.estado==="trabalhando" || ponto.estado==="pausado"){
+        pontoTimerId = setInterval(atualizarTextoStatusPonto, 30000);
+    }
+}
+
+function atualizarTextoStatusPonto(){
+    let status = document.getElementById("pontoStatus");
+    if(!status) return;
+    if(ponto.estado==="trabalhando"){
+        status.innerHTML = `🟢 Trabalhando desde ${formatarHora(ponto.inicio)} · ${formatarDuracao(calcularTotalTrabalhado())}`;
+    } else if(ponto.estado==="pausado"){
+        status.innerHTML = `🟠 Pausado · trabalhado até agora: ${formatarDuracao(calcularTotalTrabalhado())}`;
+    }
+}
+
+function renderizarPausasUI(){
+    let cont = document.getElementById("pontoPausas");
+    if(!cont) return;
+
+    let intervalos = (ponto.intervalos||[]).filter(iv=>iv && iv.inicio);
+    if(intervalos.length===0){
+        cont.innerHTML = "";
+        return;
+    }
+
+    cont.innerHTML = intervalos.map((iv,i)=>{
+        let ini = formatarHora(iv.inicio);
+        let fim = iv.fim ? formatarHora(iv.fim) : "em andamento";
+        return `<div class="pausaItem">⏸ Pausa ${i+1}: ${ini} → ${fim}</div>`;
+    }).join("");
+}
+
+function renderizarPontoUI(){
+    let status = document.getElementById("pontoStatus");
+    let botoes = document.getElementById("pontoBotoes");
+    if(!status || !botoes) return;
+
+    if(ponto.estado==="parado"){
+        status.innerHTML = ponto.fim
+            ? `Último turno: ${formatarHora(ponto.inicio)} → ${formatarHora(ponto.fim)} (${formatarDuracao(calcularTotalTrabalhado())} trabalhados)`
+            : "Turno não iniciado";
+        botoes.innerHTML = `<button class="primary" onclick="iniciarTrabalho()">▶ Iniciar turno</button>`;
+    } else if(ponto.estado==="trabalhando"){
+        status.innerHTML = `🟢 Trabalhando desde ${formatarHora(ponto.inicio)} · ${formatarDuracao(calcularTotalTrabalhado())}`;
+        botoes.innerHTML = `
+            <div style="display:flex;gap:8px">
+                <button class="toggle" style="flex:1;margin-bottom:0" onclick="pausarTrabalho()">⏸ Pausar</button>
+                <button class="metaBtn" style="flex:1;margin-bottom:0" onclick="encerrarTrabalho()">⏹ Encerrar</button>
+            </div>`;
+    } else if(ponto.estado==="pausado"){
+        status.innerHTML = `🟠 Pausado · trabalhado até agora: ${formatarDuracao(calcularTotalTrabalhado())}`;
+        botoes.innerHTML = `
+            <div style="display:flex;gap:8px">
+                <button class="primary" style="flex:1;margin-bottom:0" onclick="retomarTrabalho()">▶ Retomar</button>
+                <button class="metaBtn" style="flex:1;margin-bottom:0" onclick="encerrarTrabalho()">⏹ Encerrar</button>
+            </div>`;
+    }
+
+    renderizarPausasUI();
+    agendarAtualizacaoPontoUI();
+}
+
+function iniciarTrabalho(){
+    if(ponto.estado!=="parado"){
+        alert("Já existe um turno em andamento.");
+        return;
+    }
+    document.getElementById("inputKmInicial").value = "";
+    document.getElementById("erroKmInicial").innerText = "";
+    abrirModal("kmInicialOverlay");
+}
+
+function confirmarIniciarTrabalho(){
+    let erro = document.getElementById("erroKmInicial");
+    let km = document.getElementById("inputKmInicial").value;
+    let kmInicial = null;
+
+    if(km!==null && km.trim()!==""){
+        let n = parseFloat(km);
+        if(isNaN(n) || n<0){
+            erro.innerText = "KM inicial inválido";
+            return;
+        }
+        kmInicial = n;
+    }
+
+    try{
+        ponto = {
+            estado: "trabalhando",
+            inicio: new Date().toISOString(),
+            intervalos: [],
+            fim: null,
+            kmInicial,
+            kmFinal: null
+        };
+        salvarPonto();
+        renderizarPontoUI();
+        fecharModal("kmInicialOverlay");
+    }catch(e){
+        console.error("Erro ao iniciar turno:", e);
+        erro.innerText = "Erro ao iniciar turno. Tente novamente.";
+    }
+}
+
+function pausarTrabalho(){
+    if(ponto.estado!=="trabalhando") return;
+    try{
+        ponto.intervalos.push({inicio:new Date().toISOString(), fim:null});
+        ponto.estado = "pausado";
+        salvarPonto();
+        renderizarPontoUI();
+    }catch(e){
+        console.error("Erro ao pausar turno:", e);
+        alert("Não foi possível pausar o turno.");
+    }
+}
+
+function retomarTrabalho(){
+    if(ponto.estado!=="pausado") return;
+    try{
+        let ultimo = ponto.intervalos[ponto.intervalos.length-1];
+        if(ultimo && !ultimo.fim) ultimo.fim = new Date().toISOString();
+        ponto.estado = "trabalhando";
+        salvarPonto();
+        renderizarPontoUI();
+    }catch(e){
+        console.error("Erro ao retomar turno:", e);
+        alert("Não foi possível retomar o turno.");
+    }
+}
+
+function encerrarTrabalho(){
+    if(ponto.estado==="parado") return;
+    document.getElementById("inputKmFinal").value = "";
+    document.getElementById("erroKmFinal").innerText = "";
+    abrirModal("kmFinalOverlay");
+}
+
+function confirmarEncerrarTrabalho(){
+    let erro = document.getElementById("erroKmFinal");
+
+    let km = document.getElementById("inputKmFinal").value;
+    let kmFinal = null;
+    if(km!==null && km.trim()!==""){
+        let n = parseFloat(km);
+        if(isNaN(n) || n<0){
+            erro.innerText = "KM final inválido";
+            return;
+        }
+        kmFinal = n;
+    }
+
+    if(kmFinal!==null && numeroValido(ponto.kmInicial) && kmFinal<ponto.kmInicial){
+        erro.innerText = `KM final não pode ser menor que o KM inicial (${ponto.kmInicial})`;
+        return;
+    }
+
+    try{
+        if(ponto.estado==="pausado"){
+            let ultimo = ponto.intervalos[ponto.intervalos.length-1];
+            if(ultimo && !ultimo.fim) ultimo.fim = new Date().toISOString();
+        }
+
+        if(kmFinal!==null) ponto.kmFinal = kmFinal;
+
+        ponto.fim = new Date().toISOString();
+        ponto.estado = "parado";
+        salvarPonto();
+        renderizarPontoUI();
+        fecharModal("kmFinalOverlay");
+        mostrarResumoTurno();
+    }catch(e){
+        console.error("Erro ao encerrar turno:", e);
+        erro.innerText = "Erro ao encerrar turno. Tente novamente.";
+    }
+}
+
+function mostrarResumoTurno(){
+    let cont = document.getElementById("resumoTurnoConteudo");
+    if(!cont) return;
+
+    try{
+        let d = montarDadosRelatorio(new Date());
+        let totalDespesasHoje = totalDespesasDoDia(new Date());
+        let liquidoHoje = d.valorTotal - totalDespesasHoje;
+
+        cont.innerHTML = `
+            <div>💰 Ganho hoje: <b>${formatarMoeda(d.valorTotal)}</b></div>
+            <div>💸 Despesas hoje: <b>${formatarMoeda(totalDespesasHoje)}</b></div>
+            <div>💵 Ganho líquido: <b>${formatarMoeda(liquidoHoje)}</b></div>
+            <div>🔢 Corridas: <b>${d.qtdCorridas}</b></div>
+            <div>🛣️ KM rodados: <b>${d.kmRodados!==null ? d.kmRodados.toFixed(1)+" km" : "não informado"}</b></div>
+            <div>⏱️ Tempo efetivo: <b>${formatarDuracao(d.tempos.efetivoMs)}</b></div>
+            <div>📈 Ganho por hora: <b>${d.horasEfetivas>0 ? formatarMoeda(d.ganhoPorHora) : "não disponível"}</b></div>
+            <div>🎯 Meta diária: <b>${formatarMoeda(metaDiaria)} — ${d.metaDiariaAtingida===null ? "não avaliável" : (d.metaDiariaAtingida ? "✅ atingida" : "❌ não atingida")}</b></div>
+        `;
+        abrirModal("resumoTurnoOverlay");
+    }catch(e){
+        console.error("Erro ao montar resumo do turno:", e);
+    }
+}
+
+function resetarPonto(){
+    if(!confirm("Resetar o controle de ponto? Isso não apaga as corridas já registradas.")) return;
+    if(pontoTimerId){
+        clearInterval(pontoTimerId);
+        pontoTimerId = null;
+    }
+    ponto = {estado:"parado", inicio:null, intervalos:[], fim:null, kmInicial:null, kmFinal:null};
+    salvarPonto();
+    renderizarPontoUI();
+}
+
+/* ======================================================================
+   DESPESAS
+   ====================================================================== */
+const CATEGORIAS_DESPESA = {
+    alimentacao: {label:"Alimentação", icone:"🍔"},
+    combustivel: {label:"Combustível", icone:"⛽"},
+    outras: {label:"Outras", icone:"📝"}
+};
+
+function despesaValida(d){
+    return d && typeof d==="object" && numeroValido(d.valor) && d.valor>0 &&
+        Object.prototype.hasOwnProperty.call(CATEGORIAS_DESPESA, d.categoria) &&
+        typeof d.timestamp==="string" && !isNaN(new Date(d.timestamp).getTime());
+}
+
+let despesas = lsGetJSON("despesas", []);
+if(!Array.isArray(despesas)) despesas = [];
+despesas = despesas.filter(despesaValida);
+
+function salvarDespesas(){
+    lsSet("despesas", despesas);
+}
+
+function despesasDoDia(data){
+    return despesas.filter(d=>mesmoDia(d.timestamp, data));
+}
+
+function totalDespesasDoDia(data){
+    return despesasDoDia(data).reduce((a,d)=>a+d.valor,0);
+}
+
+let categoriaDespesaSelecionada = "alimentacao";
+
+function abrirDespesaModal(){
+    categoriaDespesaSelecionada = "alimentacao";
+    document.querySelectorAll(".despesaCatBtn").forEach(b=>b.classList.remove("active"));
+    let btnAlimentacao = document.getElementById("despCatAlimentacao");
+    if(btnAlimentacao) btnAlimentacao.classList.add("active");
+
+    document.getElementById("inputDescricaoDespesa").style.display = "none";
+    document.getElementById("inputDescricaoDespesa").value = "";
+    document.getElementById("inputValorDespesa").value = "";
+    document.getElementById("erroDespesa").innerText = "";
+
+    renderizarListaDespesasHoje();
+    abrirModal("despesaOverlay");
+}
+
+function fecharDespesaModal(){
+    fecharModal("despesaOverlay");
+}
+
+function selecionarCategoriaDespesa(cat){
+    if(!CATEGORIAS_DESPESA[cat]) return;
+    categoriaDespesaSelecionada = cat;
+
+    document.querySelectorAll(".despesaCatBtn").forEach(b=>b.classList.remove("active"));
+    let ids = {alimentacao:"despCatAlimentacao", combustivel:"despCatCombustivel", outras:"despCatOutras"};
+    let btn = document.getElementById(ids[cat]);
+    if(btn) btn.classList.add("active");
+
+    document.getElementById("inputDescricaoDespesa").style.display = cat==="outras" ? "block" : "none";
+}
+
+function salvarDespesa(){
+    let erro = document.getElementById("erroDespesa");
+    let valor = parseFloat(document.getElementById("inputValorDespesa").value);
+    let descricao = document.getElementById("inputDescricaoDespesa").value.trim();
+
+    if(isNaN(valor) || valor<=0){
+        erro.innerText = "Digite um valor válido maior que zero";
+        return;
+    }
+    if(valor>999999){
+        erro.innerText = "Valor muito alto. Confira o valor digitado.";
+        return;
+    }
+    if(categoriaDespesaSelecionada==="outras" && !descricao){
+        erro.innerText = "Descreva a despesa";
+        return;
+    }
+    if(!descricao){
+        descricao = CATEGORIAS_DESPESA[categoriaDespesaSelecionada].label;
+    }
+
+    try{
+        despesas.unshift({
+            valor,
+            categoria: categoriaDespesaSelecionada,
+            descricao,
+            timestamp: new Date().toISOString()
+        });
+        salvarDespesas();
+
+        document.getElementById("inputValorDespesa").value = "";
+        document.getElementById("inputDescricaoDespesa").value = "";
+        erro.innerText = "";
+
+        renderizarListaDespesasHoje();
+        atualizarMetaDiariaUI();
+        if(document.getElementById("tabMetricas").classList.contains("active")) renderizarMetricas();
+    }catch(e){
+        console.error("Erro ao salvar despesa:", e);
+        erro.innerText = "Erro ao salvar. Tente novamente.";
+    }
+}
+
+function excluirDespesa(index){
+    if(!despesas[index]) return;
+    if(!confirm("Excluir esta despesa?")) return;
+    despesas.splice(index,1);
+    salvarDespesas();
+    renderizarListaDespesasHoje();
+    atualizarMetaDiariaUI();
+    if(document.getElementById("tabMetricas").classList.contains("active")) renderizarMetricas();
+}
+
+function renderizarListaDespesasHoje(){
+    let cont = document.getElementById("listaDespesasHoje");
+    if(!cont) return;
+
+    let hoje = new Date();
+    let doDia = despesas
+        .map((d,i)=>({...d,index:i}))
+        .filter(d=>mesmoDia(d.timestamp, hoje))
+        .sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
+
+    if(doDia.length===0){
+        cont.innerHTML = `<div class="semChaves">Nenhuma despesa registrada hoje</div>`;
+        return;
+    }
+
+    let totalHoje = doDia.reduce((a,d)=>a+d.valor,0);
+    cont.innerHTML = `<div style="font-size:13px;opacity:.7;margin-bottom:8px">Total gasto hoje: ${formatarMoeda(totalHoje)}</div>` +
+        doDia.map(d=>`
+            <div class="despesaItem">
+                <div>${CATEGORIAS_DESPESA[d.categoria] ? CATEGORIAS_DESPESA[d.categoria].icone : "💸"} ${escapeHtml(d.descricao)} — ${formatarHora(d.timestamp)}</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <b>${formatarMoeda(d.valor)}</b>
+                    <button onclick="excluirDespesa(${d.index})" style="width:auto;padding:6px 8px">🗑️</button>
+                </div>
+            </div>
+        `).join("");
+}
+
+/* ======================================================================
+   MÉTRICAS
+   ====================================================================== */
+let modoMetricas = "hora";
+let tipoMetricas = "ganhos"; // "ganhos" ou "corridas"
+
+function mudarModoMetricas(modo){
+    modoMetricas = modo;
+    document.getElementById("metricasBtnHora").classList.toggle("active", modo==="hora");
+    document.getElementById("metricasBtnDia").classList.toggle("active", modo==="dia");
+    document.getElementById("metricasBtnSemana").classList.toggle("active", modo==="semana");
+    document.getElementById("metricasBtnMes").classList.toggle("active", modo==="mes");
+    renderizarMetricas();
+}
+
+function mudarTipoMetricas(tipo){
+    tipoMetricas = tipo;
+    document.getElementById("metricasTipoGanhos").classList.toggle("active", tipo==="ganhos");
+    document.getElementById("metricasTipoCorridas").classList.toggle("active", tipo==="corridas");
+    renderizarMetricas();
+}
+
+function inicioDaSemana(data){
+    let d = new Date(data);
+    let diaSemana = d.getDay(); // 0=domingo
+    d.setDate(d.getDate() - diaSemana);
+    d.setHours(0,0,0,0);
+    return d;
+}
+
+function valorDoGrupo(itens){
+    return tipoMetricas==="ganhos" ? itens.reduce((a,c)=>a+c.valor,0) : itens.length;
+}
+
+function renderizarMetricas(){
+    let grafico = document.getElementById("metricasGrafico");
+    let totalEl = document.getElementById("metricasTotal");
+    let subtituloEl = document.getElementById("metricasSubtitulo");
+    grafico.innerHTML = "";
+
+    let grupos = []; // [{label, valor}]
+    let corridasNoPeriodo = [];
+    let despesasNoPeriodo = [];
+
+    if(modoMetricas==="hora"){
+        subtituloEl.innerText = "Hoje, por hora";
+        let hoje = new Date();
+        let doDia = corridasDoDia(hoje);
+        corridasNoPeriodo = doDia;
+        despesasNoPeriodo = despesasDoDia(hoje);
+
+        if(doDia.length===0){
+            grupos = [];
+        } else {
+            let horas = doDia.map(c => new Date(c.timestamp).getHours());
+            let horaMin = Math.min(...horas);
+            let horaMax = Math.max(...horas, hoje.getHours());
+            for(let h=horaMin; h<=horaMax; h++){
+                let itens = doDia.filter(c => new Date(c.timestamp).getHours()===h);
+                grupos.push({label: String(h).padStart(2,"0")+":00", valor: valorDoGrupo(itens)});
+            }
+        }
+    }
+
+    if(modoMetricas==="dia"){
+        subtituloEl.innerText = "Últimos 7 dias · toque numa barra para ver detalhes";
+        let hoje = new Date();
+        hoje.setHours(0,0,0,0);
+        for(let i=6;i>=0;i--){
+            let d = new Date(hoje);
+            d.setDate(d.getDate()-i);
+            let itens = corridasDoDia(d);
+            let label = d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+            grupos.push({label, valor: valorDoGrupo(itens), dataRef: d});
+        }
+        let inicioPeriodo = new Date(hoje);
+        inicioPeriodo.setDate(inicioPeriodo.getDate()-6);
+        corridasNoPeriodo = corridas.filter(c => new Date(c.timestamp) >= inicioPeriodo);
+        despesasNoPeriodo = despesas.filter(d => new Date(d.timestamp) >= inicioPeriodo);
+    }
+
+    if(modoMetricas==="semana"){
+        subtituloEl.innerText = "Últimas 6 semanas";
+        let inicioSemanaAtual = inicioDaSemana(new Date());
+        for(let i=5;i>=0;i--){
+            let ini = new Date(inicioSemanaAtual);
+            ini.setDate(ini.getDate() - (7*i));
+            let fim = new Date(ini);
+            fim.setDate(fim.getDate()+7);
+            let itens = corridas.filter(c => {
+                let d = new Date(c.timestamp);
+                return d>=ini && d<fim;
+            });
+            let label = ini.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+            grupos.push({label, valor: valorDoGrupo(itens), dataRef: ini});
+        }
+        let inicioPeriodo = new Date(inicioSemanaAtual);
+        inicioPeriodo.setDate(inicioPeriodo.getDate() - (7*5));
+        corridasNoPeriodo = corridas.filter(c => new Date(c.timestamp) >= inicioPeriodo);
+        despesasNoPeriodo = despesas.filter(d => new Date(d.timestamp) >= inicioPeriodo);
+    }
+
+    if(modoMetricas==="mes"){
+        subtituloEl.innerText = "Últimos 6 meses";
+        let hoje = new Date();
+        for(let i=5;i>=0;i--){
+            let ini = new Date(hoje.getFullYear(), hoje.getMonth()-i, 1);
+            let fim = new Date(hoje.getFullYear(), hoje.getMonth()-i+1, 1);
+            let itens = corridas.filter(c => {
+                let d = new Date(c.timestamp);
+                return d>=ini && d<fim;
+            });
+            let label = ini.toLocaleDateString("pt-BR",{month:"short"}).replace(".","");
+            grupos.push({label, valor: valorDoGrupo(itens), dataRef: ini});
+        }
+        let inicioPeriodo = new Date(hoje.getFullYear(), hoje.getMonth()-5, 1);
+        corridasNoPeriodo = corridas.filter(c => new Date(c.timestamp) >= inicioPeriodo);
+        despesasNoPeriodo = despesas.filter(d => new Date(d.timestamp) >= inicioPeriodo);
+    }
+
+    let totalPeriodo = valorDoGrupo(corridasNoPeriodo);
+    totalEl.innerText = tipoMetricas==="ganhos"
+        ? "R$ " + totalPeriodo.toFixed(2)
+        : totalPeriodo + (totalPeriodo===1 ? " corrida" : " corridas");
+
+    if(grupos.length===0 || grupos.every(g=>g.valor===0)){
+        grafico.innerHTML = '<div class="metricasVazio">Nenhuma corrida registrada ainda nesse período</div>';
+    } else {
+        let maxValor = Math.max(...grupos.map(g=>g.valor), 1);
+        grupos.forEach(g=>{
+            let alturaPx = Math.max(3, (g.valor/maxValor) * 130);
+            let textoValor = tipoMetricas==="ganhos" ? g.valor.toFixed(2) : String(g.valor);
+            let item = document.createElement("div");
+            item.className = "metricasBarraItem";
+            item.innerHTML = `
+                <div class="metricasBarraValor">${textoValor}</div>
+                <div class="metricasBarra" style="height:${alturaPx}px"></div>
+                <div class="metricasBarraLabel">${g.label}</div>
+            `;
+            if(modoMetricas==="dia" && g.dataRef){
+                item.classList.add("clicavel");
+                item.title = "Toque para ver os detalhes do dia";
+                item.addEventListener("click", ()=>abrirDetalheDia(g.dataRef));
+            }
+            grafico.appendChild(item);
+        });
+    }
+
+    let qtd = corridasNoPeriodo.length;
+    let ganhoBruto = corridasNoPeriodo.reduce((a,c)=>a+c.valor,0);
+    let totalDespesas = despesasNoPeriodo.reduce((a,d)=>a+d.valor,0);
+    let ganhoLiquido = ganhoBruto - totalDespesas;
+    let media = qtd>0 ? ganhoBruto/qtd : 0;
+
+    document.getElementById("metricasMedia").innerText = "R$ " + media.toFixed(2);
+    document.getElementById("metricasQtd").innerText = qtd;
+    document.getElementById("metricasBruto").innerText = "R$ " + ganhoBruto.toFixed(2);
+    document.getElementById("metricasDespesas").innerText = "R$ " + totalDespesas.toFixed(2);
+    document.getElementById("metricasLiquido").innerText = "R$ " + ganhoLiquido.toFixed(2);
+}
+
+/* ======================================================================
+   PIX - CHAVES
+   ====================================================================== */
+let chaves = lsGetJSON("chavesPix", []);
+if(!Array.isArray(chaves)) chaves = [];
+chaves = chaves.filter(c=>c && typeof c==="object" && typeof c.nome==="string" && typeof c.valor==="string");
+
+let editandoChaveIndex = null;
+
+function salvarChaves(){
+    lsSet("chavesPix", chaves);
+}
+
+const PLACEHOLDERS_CHAVE = {
+    cpf: "Somente números (11 dígitos)",
+    cnpj: "Somente números (14 dígitos)",
+    email: "exemplo@email.com",
+    telefone: "(11) 91234-5678",
+    aleatoria: "123e4567-e89b-12d3-a456-426614174000"
+};
+
+const LABELS_TIPO_CHAVE = {
+    cpf: "CPF",
+    cnpj: "CNPJ",
+    email: "E-mail",
+    telefone: "Telefone",
+    aleatoria: "Aleatória"
+};
+
+function atualizarPlaceholderChave(){
+    let tipo = document.getElementById("inputTipoChave").value;
+    document.getElementById("inputValorChave").placeholder = PLACEHOLDERS_CHAVE[tipo] || "Chave Pix";
+}
+
+function validarChavePix(tipo, valor){
+    valor = (valor||"").trim();
+    if(!valor) return {valido:false, msg:""};
+
+    if(tipo==="cpf"){
+        let digitos = valor.replace(/\D/g,"");
+        let ok = digitos.length===11;
+        return {valido:ok, msg: ok ? "✓ CPF com 11 dígitos" : "CPF deve ter 11 dígitos"};
+    }
+    if(tipo==="cnpj"){
+        let digitos = valor.replace(/\D/g,"");
+        let ok = digitos.length===14;
+        return {valido:ok, msg: ok ? "✓ CNPJ com 14 dígitos" : "CNPJ deve ter 14 dígitos"};
+    }
+    if(tipo==="email"){
+        let ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+        return {valido:ok, msg: ok ? "✓ E-mail válido" : "Formato de e-mail inválido"};
+    }
+    if(tipo==="telefone"){
+        let digitos = valor.replace(/\D/g,"");
+        let ok = digitos.length>=10 && digitos.length<=13;
+        return {valido:ok, msg: ok ? "✓ Telefone válido" : "Informe DDD + número (10 ou 11 dígitos)"};
+    }
+    if(tipo==="aleatoria"){
+        let ok = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(valor);
+        return {valido:ok, msg: ok ? "✓ Formato de chave aleatória válido" : "Deve seguir o formato UUID (ex: 123e4567-e89b-12d3-a456-426614174000)"};
+    }
+    return {valido:true, msg:""};
+}
+
+function normalizarChavePix(tipo, valor){
+    valor = valor.trim();
+    if(tipo==="cpf" || tipo==="cnpj"){
+        return valor.replace(/\D/g,"");
+    }
+    if(tipo==="telefone"){
+        let digitos = valor.replace(/\D/g,"");
+        if(digitos.length===10 || digitos.length===11){
+            digitos = "55"+digitos;
+        }
+        return "+"+digitos;
+    }
+    if(tipo==="email"){
+        return valor.toLowerCase();
+    }
+    return valor;
+}
+
+function validarCampoChave(){
+    let tipo = document.getElementById("inputTipoChave").value;
+    let valor = document.getElementById("inputValorChave").value;
+    let div = document.getElementById("validacaoChave");
+    let r = validarChavePix(tipo, valor);
+
+    div.innerText = r.msg;
+    div.style.color = r.valido ? "#00c853" : "#ff5252";
+    return r.valido;
+}
+
+function renderizarChaves(){
+    let lista = document.getElementById("listaChaves");
+    let select = document.getElementById("chaveSelect");
+
+    if(chaves.length===0){
+        lista.innerHTML = `<div class="semChaves">Nenhuma chave cadastrada</div>`;
+        select.innerHTML = `<option value="">Cadastre uma chave Pix primeiro</option>`;
+        document.getElementById("btnGerar").disabled = true;
+        return;
+    }
+
+    document.getElementById("btnGerar").disabled = false;
+
+    lista.innerHTML = "";
+    chaves.forEach((c,i)=>{
+        let div = document.createElement("div");
+        div.className = "chaveItem";
+        div.innerHTML = `
+            <div class="chaveInfo">
+                <div class="chaveNome">${escapeHtml(c.nome)} <span style="opacity:.6;font-weight:normal">(${escapeHtml(LABELS_TIPO_CHAVE[c.tipo] || "?")})</span></div>
+                <div class="chaveValor">${escapeHtml(c.valor)}</div>
+            </div>
+            <div class="chaveActions">
+                <button onclick="abrirFormChave(${i})">✏️</button>
+                <button onclick="excluirChave(${i})">🗑️</button>
+            </div>
+        `;
+        lista.appendChild(div);
+    });
+
+    let chaveSelecionadaAnterior = (select.value!=="" && chaves[select.value]) ? chaves[select.value] : null;
+    select.innerHTML = chaves.map((c,i)=>`<option value="${i}">${escapeHtml(c.nome)}</option>`).join("");
+
+    if(chaveSelecionadaAnterior){
+        let novoIndex = chaves.findIndex(c=>c.nome===chaveSelecionadaAnterior.nome && c.valor===chaveSelecionadaAnterior.valor && c.tipo===chaveSelecionadaAnterior.tipo);
+        if(novoIndex!==-1) select.value = novoIndex;
+    }
+}
+
+function abrirChavesModal(){
+    document.getElementById("chavesOverlay").style.display = "block";
+}
+
+function fecharChavesModal(){
+    document.getElementById("chavesOverlay").style.display = "none";
+    cancelarFormChave();
+}
+
+function abrirFormChave(index){
+    editandoChaveIndex = index;
+    let form = document.getElementById("formChave");
+    let inputNome = document.getElementById("inputNomeChave");
+    let inputTipo = document.getElementById("inputTipoChave");
+    let inputValor = document.getElementById("inputValorChave");
+
+    if(index!==null && chaves[index]){
+        inputNome.value = chaves[index].nome;
+        inputTipo.value = chaves[index].tipo || "cpf";
+        inputValor.value = chaves[index].valor;
+    } else {
+        inputNome.value = "";
+        inputTipo.value = "cpf";
+        inputValor.value = "";
+    }
+
+    atualizarPlaceholderChave();
+    document.getElementById("validacaoChave").innerText = "";
+    form.classList.add("visivel");
+}
+
+function salvarFormChave(){
+    let nome = document.getElementById("inputNomeChave").value.trim();
+    let tipo = document.getElementById("inputTipoChave").value;
+    let valorBruto = document.getElementById("inputValorChave").value.trim();
+
+    if(!nome || !valorBruto){
+        alert("Preencha nome e chave Pix");
+        return;
+    }
+
+    let validacao = validarChavePix(tipo, valorBruto);
+    if(!validacao.valido){
+        alert("Chave Pix inválida para o tipo selecionado (" + LABELS_TIPO_CHAVE[tipo] + "):\n" + validacao.msg);
+        return;
+    }
+
+    let valor = normalizarChavePix(tipo, valorBruto);
+
+    let duplicada = chaves.some((c,i)=> c.valor===valor && c.tipo===tipo && i!==editandoChaveIndex);
+    if(duplicada && !confirm("Já existe uma chave cadastrada com este mesmo valor. Cadastrar mesmo assim?")){
+        return;
+    }
+
+    try{
+        if(editandoChaveIndex!==null && chaves[editandoChaveIndex]){
+            chaves[editandoChaveIndex] = {nome, valor, tipo};
+        } else {
+            chaves.push({nome, valor, tipo});
+        }
+
+        salvarChaves();
+        renderizarChaves();
+        cancelarFormChave();
+    }catch(e){
+        console.error("Erro ao salvar chave Pix:", e);
+        alert("Não foi possível salvar a chave. Tente novamente.");
+    }
+}
+
+function cancelarFormChave(){
+    editandoChaveIndex = null;
+    document.getElementById("formChave").classList.remove("visivel");
+    document.getElementById("inputNomeChave").value = "";
+    document.getElementById("inputValorChave").value = "";
+    document.getElementById("validacaoChave").innerText = "";
+}
+
+function excluirChave(index){
+    if(!chaves[index]) return;
+    if(!confirm("Excluir esta chave Pix?")) return;
+    if(editandoChaveIndex===index) cancelarFormChave();
+    chaves.splice(index,1);
+    salvarChaves();
+    renderizarChaves();
+}
+
+/* ======================================================================
+   PIX - TAXA (+20%)
+   ====================================================================== */
+let taxaAtiva = false;
+
+function toggleTaxa(){
+    taxaAtiva = !taxaAtiva;
+    document.getElementById("btnRaio").classList.toggle("ativo", taxaAtiva);
+    atualizarInfoTaxa();
+}
+
+function atualizarInfoTaxa(){
+    let valorInput = document.getElementById("valor");
+    let info = document.getElementById("infoTaxa");
+    let valor = parseFloat(valorInput.value);
+
+    if(taxaAtiva && !isNaN(valor) && valor>0){
+        let comTaxa = valor*1.2;
+        info.innerText = `Valor original R$ ${valor.toFixed(2)} + 20% = R$ ${comTaxa.toFixed(2)}`;
+        info.classList.add("visivel");
+    } else {
+        info.innerText = "";
+        info.classList.remove("visivel");
+    }
+}
+
+/* ======================================================================
+   PIX - GERAÇÃO DO QR CODE (payload BR Code / EMV)
+   ====================================================================== */
+function crc16(str){
+    let crc = 0xFFFF;
+    for(let i=0;i<str.length;i++){
+        crc ^= str.charCodeAt(i) << 8;
+        for(let b=0;b<8;b++){
+            crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+            crc &= 0xFFFF;
+        }
+    }
+    return crc.toString(16).toUpperCase().padStart(4,"0");
+}
+
+function emv(id,value){
+    let len = value.length.toString().padStart(2,"0");
+    return `${id}${len}${value}`;
+}
+
+function montarPayloadPix(chave, valor, nome, cidade){
+    nome = removerAcentos(nome||"RECEBEDOR").substring(0,25).toUpperCase();
+    cidade = removerAcentos(cidade||"BRASIL").substring(0,15).toUpperCase();
+
+    let merchantAccount = emv("00","BR.GOV.BCB.PIX") + emv("01",chave);
+    let campos =
+        emv("00","01") +
+        emv("26",merchantAccount) +
+        emv("52","0000") +
+        emv("53","986") +
+        (valor ? emv("54",valor.toFixed(2)) : "") +
+        emv("58","BR") +
+        emv("59",nome) +
+        emv("60",cidade) +
+        emv("62",emv("05","***"));
+
+    let semCrc = campos + "6304";
+    return semCrc + crc16(semCrc);
+}
+
+let payloadPixAtual = "";
+
+function gerarPix(){
+    let select = document.getElementById("chaveSelect");
+    let index = select.value;
+
+    if(index===""||!chaves[index]){
+        alert("Cadastre e selecione uma chave Pix");
+        return;
+    }
+
+    try{
+        let chave = chaves[index];
+        let valorInput = parseFloat(document.getElementById("valor").value);
+        let valorFinal = !isNaN(valorInput) && valorInput>0
+            ? (taxaAtiva ? valorInput*1.2 : valorInput)
+            : null;
+
+        let payload = montarPayloadPix(chave.valor, valorFinal, chave.nome, "BRASIL");
+        payloadPixAtual = payload;
+
+        document.getElementById("qrcode").innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+            text: payload,
+            width: 300,
+            height: 300
+        });
+
+        document.getElementById("formArea").style.display = "none";
+        document.getElementById("qrArea").style.display = "block";
+
+        let btnVoltarPix = document.getElementById("btnVoltarPix");
+        if(btnVoltarPix) btnVoltarPix.style.display = "none";
+    }catch(e){
+        console.error("Erro ao gerar QR Code Pix:", e);
+        alert("Não foi possível gerar o QR Code. Verifique a chave selecionada e tente novamente.");
+    }
+}
+
+function copiarFallback(texto){
+    try{
+        let textarea = document.createElement("textarea");
+        textarea.value = texto;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("Código Pix copiado!");
+    }catch(e){
+        console.error("Erro ao copiar código Pix:", e);
+        alert("Não foi possível copiar automaticamente. Copie o código manualmente.");
+    }
+}
+
+function copiarCodigoPix(){
+    if(!payloadPixAtual){
+        alert("Gere o QR Code primeiro.");
+        return;
+    }
+
+    let btn = document.getElementById("btnCopiarPix");
+    let textoOriginal = btn ? btn.innerText : "";
+
+    if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(payloadPixAtual).then(()=>{
+            if(btn){
+                btn.innerText = "✅";
+                setTimeout(()=>{ btn.innerText = textoOriginal; }, 1800);
+            }
+        }).catch(()=>{
+            copiarFallback(payloadPixAtual);
+        });
+    } else {
+        copiarFallback(payloadPixAtual);
+    }
+}
+
+function voltar(){
+    document.getElementById("qrArea").style.display = "none";
+    document.getElementById("formArea").style.display = "block";
+    let btnVoltarPix = document.getElementById("btnVoltarPix");
+    if(btnVoltarPix) btnVoltarPix.style.display = "block";
+}
+
+function resetar(){
+    if(!confirm("Limpar o formulário de cobrança Pix?")) return;
+    document.getElementById("valor").value = "";
+    taxaAtiva = false;
+    payloadPixAtual = "";
+    document.getElementById("btnRaio").classList.remove("ativo");
+    atualizarInfoTaxa();
+    voltar();
+}
+
+/* ======================================================================
+   PIX - CONFIRMAÇÃO E AVALIAÇÃO
+   ====================================================================== */
+function confirmar(){
+    document.getElementById("overlay").style.display = "block";
+    document.querySelectorAll(".star").forEach(s=>s.classList.remove("active"));
+}
+
+function avaliar(nota){
+    document.querySelectorAll(".star").forEach((s,i)=>{
+        s.classList.toggle("active", i<nota);
+    });
+}
+
+function voltarConfirmacao(){
+    document.getElementById("overlay").style.display = "none";
+    voltar();
+}
+
+/* ======================================================================
+   RELATÓRIO
+   ====================================================================== */
+function formatarDataCompleta(d){
+    return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+}
+
+function formatarMoeda(v){
+    return "R$ " + (numeroValido(v) ? v : 0).toFixed(2);
+}
+
+/* Monta os dados consolidados do relatório do dia (usados também para validação/telas futuras) */
+function montarDadosRelatorio(dataRef){
+    dataRef = dataRef || new Date();
+
+    let corridasDia = corridasDoDia(dataRef)
+        .slice()
+        .sort((a,b)=> new Date(a.timestamp) - new Date(b.timestamp)); // ordem cronológica
+
+    let qtdCorridas = corridasDia.length;
+    let valorTotal = corridasDia.reduce((a,c)=>a+c.valor,0);
+    let mediaPorCorrida = qtdCorridas>0 ? valorTotal/qtdCorridas : 0;
+
+    // Dados de ponto: só são considerados se pertencerem ao dia do relatório
+    let pontoDoDia = (ponto && ponto.inicio && mesmoDia(ponto.inicio, dataRef)) ? ponto : null;
+    let tempos = pontoDoDia ? calcularTemposPonto(pontoDoDia) : {totalMs:0, pausaMs:0, efetivoMs:0};
+
+    let horasEfetivas = tempos.efetivoMs / 3600000;
+    let ganhoPorHora = horasEfetivas>0 ? valorTotal/horasEfetivas : 0;
+
+    let kmInicial = pontoDoDia && numeroValido(pontoDoDia.kmInicial) ? pontoDoDia.kmInicial : null;
+    let kmFinal = pontoDoDia && numeroValido(pontoDoDia.kmFinal) ? pontoDoDia.kmFinal : null;
+    let kmRodados = (kmInicial!==null && kmFinal!==null && kmFinal>=kmInicial) ? (kmFinal-kmInicial) : null;
+
+    let metaHoraAtingida = numeroValido(META) && META>0 ? ganhoPorHora>=META : null;
+    let metaDiariaAtingida = numeroValido(metaDiaria) && metaDiaria>0 ? valorTotal>=metaDiaria : null;
+
+    return {
+        data: dataRef,
+        pontoDoDia, tempos,
+        corridasDia, qtdCorridas, valorTotal, mediaPorCorrida,
+        horasEfetivas, ganhoPorHora,
+        kmInicial, kmFinal, kmRodados,
+        metaHoraAtingida, metaDiariaAtingida
+    };
+}
+
+function baixarRelatorio(){
+    let botao = document.getElementById("reportBtn");
+    try{
+        if(botao) botao.disabled = true;
+
+        let hoje = new Date();
+        let d = montarDadosRelatorio(hoje);
+
+        let linhas = [];
+        linhas.push(`RELATÓRIO DIÁRIO - ${formatarDataCompleta(hoje)}`);
+        linhas.push("=".repeat(40));
+        linhas.push("");
+
+        linhas.push("TURNO");
+        linhas.push("-".repeat(40));
+        if(d.pontoDoDia && d.pontoDoDia.inicio){
+            linhas.push(`Início do turno: ${formatarHora(d.pontoDoDia.inicio)}`);
+            linhas.push(`Encerramento: ${d.pontoDoDia.fim ? formatarHora(d.pontoDoDia.fim) : "turno em andamento"}`);
+            linhas.push(`Tempo total do turno: ${formatarDuracao(d.tempos.totalMs)}`);
+            linhas.push(`Tempo em pausa: ${formatarDuracao(d.tempos.pausaMs)}`);
+            linhas.push(`Tempo efetivo de trabalho: ${formatarDuracao(d.tempos.efetivoMs)}`);
+            linhas.push(`KM inicial: ${d.kmInicial!==null ? d.kmInicial : "não informado"}`);
+            linhas.push(`KM final: ${d.kmFinal!==null ? d.kmFinal : "não informado"}`);
+            linhas.push(`KM rodados: ${d.kmRodados!==null ? d.kmRodados.toFixed(1) : "não disponível"}`);
+        } else {
+            linhas.push("Nenhum turno registrado para hoje no controle de ponto.");
+        }
+        linhas.push("");
+
+        linhas.push("CORRIDAS");
+        linhas.push("-".repeat(40));
+        linhas.push(`Quantidade de corridas: ${d.qtdCorridas}`);
+        linhas.push(`Valor total: ${formatarMoeda(d.valorTotal)}`);
+        linhas.push(`Média por corrida: ${formatarMoeda(d.mediaPorCorrida)}`);
+        linhas.push(`Ganho por hora efetiva: ${d.horasEfetivas>0 ? formatarMoeda(d.ganhoPorHora) : "não disponível (sem tempo de turno registrado)"}`);
+        linhas.push("");
+
+        linhas.push("METAS");
+        linhas.push("-".repeat(40));
+        linhas.push(`Meta por hora: ${formatarMoeda(META)} — ${d.metaHoraAtingida===null ? "não avaliável" : (d.metaHoraAtingida ? "✅ atingida" : "❌ não atingida")}`);
+        linhas.push(`Meta diária: ${formatarMoeda(metaDiaria)} — ${d.metaDiariaAtingida===null ? "não avaliável" : (d.metaDiariaAtingida ? "✅ atingida" : "❌ não atingida")}`);
+        linhas.push("");
+
+        linhas.push("CORRIDAS EM ORDEM CRONOLÓGICA");
+        linhas.push("-".repeat(40));
+        if(d.corridasDia.length===0){
+            linhas.push("Nenhuma corrida registrada hoje.");
+        } else {
+            d.corridasDia.forEach((c,i)=>{
+                let h = formatarHora(c.timestamp);
+                linhas.push(`${String(i+1).padStart(2,"0")}. ${h} - ${formatarMoeda(c.valor)}`);
+            });
+        }
+
+        let texto = linhas.join("\n");
+        let blob = new Blob([texto], {type:"text/plain;charset=utf-8"});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = `relatorio-${hoje.toISOString().slice(0,10)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    }catch(e){
+        console.error("Erro ao gerar relatório:", e);
+        alert("Não foi possível gerar o relatório. Tente novamente.");
+    }finally{
+        if(botao) setTimeout(()=>{ botao.disabled = false; }, 500);
+    }
+}
+
+/* ======================================================================
+   INICIALIZAÇÃO
+   ====================================================================== */
+window.addEventListener("DOMContentLoaded", ()=>{
+    try{ carregarTema(); }catch(e){ console.error("Erro ao carregar tema:", e); }
+    try{ ajustarTela(); }catch(e){ console.error("Erro ao ajustar tela:", e); }
+    try{ carregarMeta(); }catch(e){ console.error("Erro ao carregar meta:", e); }
+    try{ renderizar(); }catch(e){ console.error("Erro ao renderizar corridas:", e); }
+    try{ renderizarPontoUI(); }catch(e){ console.error("Erro ao renderizar ponto:", e); }
+    try{ renderizarChaves(); }catch(e){ console.error("Erro ao renderizar chaves Pix:", e); }
+
+    let abaSalva = lsGetRaw("abaAtiva", "ganhos");
+    if(!["ganhos","pix","metricas"].includes(abaSalva)) abaSalva = "ganhos";
+    try{ mudarAba(abaSalva); }catch(e){ console.error("Erro ao ativar aba inicial:", e); }
+});
+</script>
+</body>
+</html>
